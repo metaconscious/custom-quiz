@@ -117,9 +117,10 @@ class MultipleChoiceQuiz extends StatelessWidget {
           Question(question: question),
           const Divider(),
           OptionList(
-              options: options,
-              selections: selections,
-              onOptionSelected: onOptionSelected),
+            options: options,
+            selections: selections,
+            onOptionSelected: onOptionSelected,
+          ),
         ],
       ),
     );
@@ -212,6 +213,49 @@ class _SingleAnswerMultipleChoiceQuizState
   }
 }
 
+class TrueOrFalseQuiz extends StatefulWidget {
+  const TrueOrFalseQuiz({Key? key, required this.question}) : super(key: key);
+
+  final String question;
+  final List<String> options = const ['False', 'True'];
+
+  @override
+  State<TrueOrFalseQuiz> createState() => _TrueOrFalseQuizState();
+}
+
+class _TrueOrFalseQuizState extends State<TrueOrFalseQuiz> {
+  bool firstChange = true;
+  int lastIndex = 0;
+  late final List<bool> selections;
+
+  @override
+  void initState() {
+    super.initState();
+    selections = List<bool>.filled(widget.options.length, false);
+  }
+
+  void _handleOptionSelected(int index) {
+    setState(() {
+      if (firstChange) {
+        firstChange = false;
+      } else {
+        selections[lastIndex] = !selections[lastIndex];
+      }
+      lastIndex = index;
+      selections[index] = !selections[index];
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MultipleChoiceQuiz(
+        question: widget.question,
+        options: widget.options,
+        onOptionSelected: _handleOptionSelected,
+        selections: selections);
+  }
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -219,6 +263,8 @@ class MyApp extends StatelessWidget {
       question: 'question 1',
       options: ['option 1', 'option 2', 'option 3', 'option 4'],
       answer: [true, false, false, true]);
+
+  final toft = const TrueOrFalseTopic(question: 'statement 2', answer: false);
 
   // This widget is the root of your application.
   @override
@@ -243,10 +289,7 @@ class MyApp extends StatelessWidget {
           // the App.build method, and use it to set our appbar title.
           title: const Text('Hello Flutter'),
         ),
-        body: SingleAnswerMultipleChoiceQuiz(
-          question: mamct.question,
-          options: mamct.options,
-        ),
+        body: TrueOrFalseQuiz(question: toft.question),
       ),
     );
   }
