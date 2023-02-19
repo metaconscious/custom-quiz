@@ -21,11 +21,18 @@ class Question extends StatelessWidget {
 }
 
 class Option extends StatelessWidget {
-  const Option({Key? key, required this.option, required this.index})
+  const Option(
+      {Key? key,
+      required this.option,
+      required this.index,
+      required this.isChosen,
+      required this.onOptionSelected})
       : super(key: key);
 
   final String option;
   final int index;
+  final bool isChosen;
+  final OptionSelectedCallback onOptionSelected;
 
   String _indexToUppercaseAlphabet() {
     if (index < 26) {
@@ -47,14 +54,29 @@ class Option extends StatelessWidget {
         ],
       ),
       title: Text(option),
+      selected: isChosen,
+      selectedColor: Colors.lightBlueAccent,
+      selectedTileColor: Colors.blueGrey,
+      onTap: () {
+        onOptionSelected(index);
+      },
     );
   }
 }
 
+typedef OptionSelectedCallback = void Function(int index);
+
 class OptionList extends StatelessWidget {
-  const OptionList({Key? key, required this.options}) : super(key: key);
+  const OptionList(
+      {Key? key,
+      required this.options,
+      required this.selections,
+      required this.onOptionSelected})
+      : super(key: key);
 
   final List<String> options;
+  final List<bool> selections;
+  final OptionSelectedCallback onOptionSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -62,14 +84,19 @@ class OptionList extends StatelessWidget {
       children: options
           .asMap()
           .entries
-          .map((e) => Option(option: e.value, index: e.key))
+          .map((e) => Option(
+                option: e.value,
+                index: e.key,
+                isChosen: selections.elementAt(e.key),
+                onOptionSelected: onOptionSelected,
+              ))
           .toList(),
     );
   }
 }
 
-class MultipleAnswerMultipleChoiceTopicCard extends StatelessWidget {
-  const MultipleAnswerMultipleChoiceTopicCard(
+class MultipleAnswerMultipleChoiceQuiz extends StatefulWidget {
+  const MultipleAnswerMultipleChoiceQuiz(
       {Key? key, required this.question, required this.options})
       : super(key: key);
 
@@ -77,13 +104,31 @@ class MultipleAnswerMultipleChoiceTopicCard extends StatelessWidget {
   final List<String> options;
 
   @override
+  State<MultipleAnswerMultipleChoiceQuiz> createState() =>
+      _MultipleAnswerMultipleChoiceQuizState();
+}
+
+class _MultipleAnswerMultipleChoiceQuizState
+    extends State<MultipleAnswerMultipleChoiceQuiz> {
+  final List<bool> selections = [false, false, false, false];
+
+  void _handleOptionSelected(int index) {
+    setState(() {
+      selections[index] = !selections[index];
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Card(
       child: Column(
         children: [
-          Question(question: question),
+          Question(question: widget.question),
           const Divider(),
-          OptionList(options: options),
+          OptionList(
+              options: widget.options,
+              selections: selections,
+              onOptionSelected: _handleOptionSelected),
         ],
       ),
     );
@@ -93,7 +138,7 @@ class MultipleAnswerMultipleChoiceTopicCard extends StatelessWidget {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  final mcmat = const MultipleAnswerMultipleChoiceTopic(
+  final mamct = const MultipleAnswerMultipleChoiceTopic(
       question: 'question 1',
       options: ['option 1', 'option 2', 'option 3', 'option 4'],
       answer: [0, 1, 2, 3]);
@@ -121,8 +166,10 @@ class MyApp extends StatelessWidget {
           // the App.build method, and use it to set our appbar title.
           title: const Text('Hello Flutter'),
         ),
-        body: MultipleAnswerMultipleChoiceTopicCard(
-            question: mcmat.question, options: mcmat.options),
+        body: MultipleAnswerMultipleChoiceQuiz(
+          question: mamct.question,
+          options: mamct.options,
+        ),
       ),
     );
   }
