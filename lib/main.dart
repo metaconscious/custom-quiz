@@ -21,11 +21,16 @@ class Question extends StatelessWidget {
 }
 
 class Option extends StatelessWidget {
-  const Option({Key? key, required this.option, required this.index})
+  const Option(
+      {Key? key,
+      required this.option,
+      required this.index,
+      required this.isChosen})
       : super(key: key);
 
   final String option;
   final int index;
+  final bool isChosen;
 
   String _indexToUppercaseAlphabet() {
     if (index < 26) {
@@ -47,14 +52,19 @@ class Option extends StatelessWidget {
         ],
       ),
       title: Text(option),
+      selected: isChosen,
+      selectedColor: Colors.lightBlueAccent,
+      selectedTileColor: Colors.blueGrey,
     );
   }
 }
 
 class OptionList extends StatelessWidget {
-  const OptionList({Key? key, required this.options}) : super(key: key);
+  const OptionList({Key? key, required this.options, required this.selections})
+      : super(key: key);
 
   final List<String> options;
+  final List<bool> selections;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +72,11 @@ class OptionList extends StatelessWidget {
       children: options
           .asMap()
           .entries
-          .map((e) => Option(option: e.value, index: e.key))
+          .map((e) => Option(
+                option: e.value,
+                index: e.key,
+                isChosen: selections.elementAt(e.key),
+              ))
           .toList(),
     );
   }
@@ -70,11 +84,15 @@ class OptionList extends StatelessWidget {
 
 class MultipleAnswerMultipleChoiceTopicCard extends StatelessWidget {
   const MultipleAnswerMultipleChoiceTopicCard(
-      {Key? key, required this.question, required this.options})
+      {Key? key,
+      required this.question,
+      required this.options,
+      required this.selections})
       : super(key: key);
 
   final String question;
   final List<String> options;
+  final List<bool> selections;
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +101,10 @@ class MultipleAnswerMultipleChoiceTopicCard extends StatelessWidget {
         children: [
           Question(question: question),
           const Divider(),
-          OptionList(options: options),
+          OptionList(
+            options: options,
+            selections: selections,
+          ),
         ],
       ),
     );
@@ -122,7 +143,10 @@ class MyApp extends StatelessWidget {
           title: const Text('Hello Flutter'),
         ),
         body: MultipleAnswerMultipleChoiceTopicCard(
-            question: mcmat.question, options: mcmat.options),
+          question: mcmat.question,
+          options: mcmat.options,
+          selections: const [true, false, false, true],
+        ),
       ),
     );
   }
