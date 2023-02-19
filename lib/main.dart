@@ -38,6 +38,26 @@ class Option extends StatelessWidget {
   }
 }
 
+class OptionList extends StatelessWidget {
+  const OptionList({Key? key, required this.options}) : super(key: key);
+
+  final List<String> options;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scrollbar(
+      child: ListView(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        children: options
+            .asMap()
+            .entries
+            .map((e) => Option(option: e.value, index: e.key))
+            .toList(),
+      ),
+    );
+  }
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -69,15 +89,8 @@ class MyApp extends StatelessWidget {
           // the App.build method, and use it to set our appbar title.
           title: const Text('Hello Flutter'),
         ),
-        body: Scrollbar(
-          child: ListView(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            children: mcmat.options
-                .asMap()
-                .entries
-                .map((e) => Option(option: e.value, index: e.key))
-                .toList(),
-          ),
+        body: OptionList(
+          options: mcmat.options,
         ),
       ),
     );
