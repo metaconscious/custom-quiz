@@ -95,6 +95,37 @@ class OptionList extends StatelessWidget {
   }
 }
 
+class MultipleChoiceQuiz extends StatelessWidget {
+  const MultipleChoiceQuiz(
+      {Key? key,
+      required this.question,
+      required this.options,
+      required this.onOptionSelected,
+      required this.selections})
+      : super(key: key);
+
+  final String question;
+  final List<String> options;
+  final List<bool> selections;
+  final OptionSelectedCallback onOptionSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Column(
+        children: [
+          Question(question: question),
+          const Divider(),
+          OptionList(
+              options: options,
+              selections: selections,
+              onOptionSelected: onOptionSelected),
+        ],
+      ),
+    );
+  }
+}
+
 class MultipleAnswerMultipleChoiceQuiz extends StatefulWidget {
   const MultipleAnswerMultipleChoiceQuiz(
       {Key? key, required this.question, required this.options})
@@ -120,18 +151,52 @@ class _MultipleAnswerMultipleChoiceQuizState
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Column(
-        children: [
-          Question(question: widget.question),
-          const Divider(),
-          OptionList(
-              options: widget.options,
-              selections: selections,
-              onOptionSelected: _handleOptionSelected),
-        ],
-      ),
-    );
+    return MultipleChoiceQuiz(
+        question: widget.question,
+        options: widget.options,
+        onOptionSelected: _handleOptionSelected,
+        selections: selections);
+  }
+}
+
+class SingleAnswerMultipleChoiceQuiz extends StatefulWidget {
+  const SingleAnswerMultipleChoiceQuiz(
+      {Key? key, required this.question, required this.options})
+      : super(key: key);
+
+  final String question;
+  final List<String> options;
+
+  @override
+  State<SingleAnswerMultipleChoiceQuiz> createState() =>
+      _SingleAnswerMultipleChoiceQuizState();
+}
+
+class _SingleAnswerMultipleChoiceQuizState
+    extends State<SingleAnswerMultipleChoiceQuiz> {
+  bool firstChange = true;
+  int lastIndex = 0;
+  final List<bool> selections = [false, false, false, false];
+
+  void _handleOptionSelected(int index) {
+    setState(() {
+      if (firstChange) {
+        firstChange = false;
+      } else {
+        selections[lastIndex] = !selections[lastIndex];
+      }
+      lastIndex = index;
+      selections[index] = !selections[index];
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MultipleChoiceQuiz(
+        question: widget.question,
+        options: widget.options,
+        onOptionSelected: _handleOptionSelected,
+        selections: selections);
   }
 }
 
@@ -166,7 +231,7 @@ class MyApp extends StatelessWidget {
           // the App.build method, and use it to set our appbar title.
           title: const Text('Hello Flutter'),
         ),
-        body: MultipleAnswerMultipleChoiceQuiz(
+        body: SingleAnswerMultipleChoiceQuiz(
           question: mamct.question,
           options: mamct.options,
         ),
