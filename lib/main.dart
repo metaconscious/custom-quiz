@@ -68,6 +68,28 @@ class OptionList extends StatelessWidget {
   }
 }
 
+class MultipleAnswerMultipleChoiceTopicCard extends StatelessWidget {
+  const MultipleAnswerMultipleChoiceTopicCard(
+      {Key? key, required this.question, required this.options})
+      : super(key: key);
+
+  final String question;
+  final List<String> options;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Column(
+        children: [
+          Question(question: question),
+          const Divider(),
+          OptionList(options: options),
+        ],
+      ),
+    );
+  }
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -99,15 +121,8 @@ class MyApp extends StatelessWidget {
           // the App.build method, and use it to set our appbar title.
           title: const Text('Hello Flutter'),
         ),
-        body: Card(
-          child: Column(
-            children: [
-              Question(question: mcmat.question),
-              const Divider(),
-              OptionList(options: mcmat.options)
-            ],
-          ),
-        ),
+        body: MultipleAnswerMultipleChoiceTopicCard(
+            question: mcmat.question, options: mcmat.options),
       ),
     );
   }
