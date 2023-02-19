@@ -141,7 +141,13 @@ class MultipleAnswerMultipleChoiceQuiz extends StatefulWidget {
 
 class _MultipleAnswerMultipleChoiceQuizState
     extends State<MultipleAnswerMultipleChoiceQuiz> {
-  final List<bool> selections = [false, false, false, false];
+  late final List<bool> selections;
+
+  @override
+  void initState() {
+    super.initState();
+    selections = List<bool>.filled(widget.options.length, false);
+  }
 
   void _handleOptionSelected(int index) {
     setState(() {
@@ -176,7 +182,13 @@ class _SingleAnswerMultipleChoiceQuizState
     extends State<SingleAnswerMultipleChoiceQuiz> {
   bool firstChange = true;
   int lastIndex = 0;
-  final List<bool> selections = [false, false, false, false];
+  late final List<bool> selections;
+
+  @override
+  void initState() {
+    super.initState();
+    selections = List<bool>.filled(widget.options.length, false);
+  }
 
   void _handleOptionSelected(int index) {
     setState(() {
