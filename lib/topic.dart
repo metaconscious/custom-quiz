@@ -25,7 +25,7 @@ class SingleAnswerMultipleChoiceTopic extends MultipleChoiceTopic<int> {
       {required super.question, required super.options, required super.answer});
 }
 
-class MultipleAnswerMultipleChoiceTopic extends MultipleChoiceTopic {
+class MultipleAnswerMultipleChoiceTopic extends MultipleChoiceTopic<List<int>> {
   const MultipleAnswerMultipleChoiceTopic(
       {required super.question, required super.options, required super.answer});
 }
