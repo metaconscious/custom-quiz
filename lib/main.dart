@@ -218,7 +218,7 @@ class MyApp extends StatelessWidget {
   final mamct = const MultipleAnswerMultipleChoiceTopic(
       question: 'question 1',
       options: ['option 1', 'option 2', 'option 3', 'option 4'],
-      answer: [0, 1, 2, 3]);
+      answer: [true, false, false, true]);
 
   // This widget is the root of your application.
   @override
