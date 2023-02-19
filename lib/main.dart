@@ -1,8 +1,41 @@
+import 'dart:convert';
+
 import 'package:custom_quiz/topic.dart';
 import 'package:flutter/material.dart';
 
 void main() {
   runApp(const MyApp());
+}
+
+class Option extends StatelessWidget {
+  const Option({Key? key, required this.option, required this.index})
+      : super(key: key);
+
+  final String option;
+  final int index;
+
+  String _indexToUppercaseAlphabet() {
+    if (index < 26) {
+      return String.fromCharCode(ascii.encode('A').first + index);
+    } else {
+      return '$index';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircleAvatar(
+            child: Text(_indexToUppercaseAlphabet()),
+          )
+        ],
+      ),
+      title: Text(option),
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -36,7 +69,10 @@ class MyApp extends StatelessWidget {
           // the App.build method, and use it to set our appbar title.
           title: const Text('Hello Flutter'),
         ),
-        body: const Placeholder(),
+        body: const Option(
+          option: 'Question',
+          index: 0,
+        ),
       ),
     );
   }
