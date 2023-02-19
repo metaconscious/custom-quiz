@@ -64,16 +64,33 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: Scaffold(
-        appBar: AppBar(
-          // Here we take the value from the MyHomePage object that was created by
-          // the App.build method, and use it to set our appbar title.
-          title: const Text('Hello Flutter'),
-        ),
-        body: const Option(
-          option: 'Question',
-          index: 0,
-        ),
-      ),
+          appBar: AppBar(
+            // Here we take the value from the MyHomePage object that was created by
+            // the App.build method, and use it to set our appbar title.
+            title: const Text('Hello Flutter'),
+          ),
+          body: Scrollbar(
+            child: ListView(
+              children: const [
+                Option(
+                  option: 'Option 1',
+                  index: 0,
+                ),
+                Option(
+                  option: 'Option 2',
+                  index: 1,
+                ),
+                Option(
+                  option: 'Option 3',
+                  index: 2,
+                ),
+                Option(
+                  option: 'Option 4',
+                  index: 3,
+                ),
+              ],
+            ),
+          )),
     );
   }
 }
