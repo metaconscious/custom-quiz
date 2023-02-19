@@ -7,6 +7,19 @@ void main() {
   runApp(const MyApp());
 }
 
+class Question extends StatelessWidget {
+  const Question({Key? key, required this.question}) : super(key: key);
+
+  final String question;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(question),
+    );
+  }
+}
+
 class Option extends StatelessWidget {
   const Option({Key? key, required this.option, required this.index})
       : super(key: key);
@@ -45,15 +58,12 @@ class OptionList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scrollbar(
-      child: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        children: options
-            .asMap()
-            .entries
-            .map((e) => Option(option: e.value, index: e.key))
-            .toList(),
-      ),
+    return Column(
+      children: options
+          .asMap()
+          .entries
+          .map((e) => Option(option: e.value, index: e.key))
+          .toList(),
     );
   }
 }
@@ -89,8 +99,14 @@ class MyApp extends StatelessWidget {
           // the App.build method, and use it to set our appbar title.
           title: const Text('Hello Flutter'),
         ),
-        body: OptionList(
-          options: mcmat.options,
+        body: Card(
+          child: Column(
+            children: [
+              Question(question: mcmat.question),
+              const Divider(),
+              OptionList(options: mcmat.options)
+            ],
+          ),
         ),
       ),
     );
