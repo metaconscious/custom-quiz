@@ -268,7 +268,6 @@ class ShortAnswerQuiz extends StatefulWidget {
 }
 
 class _ShortAnswerQuizState extends State<ShortAnswerQuiz> {
-
   String userInput = '';
 
   void _handleTextFieldChanged(String text) {
@@ -329,6 +328,28 @@ class MyApp extends StatelessWidget {
           title: const Text('Hello Flutter'),
         ),
         body: ShortAnswerQuiz(question: sat.question),
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: const [
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                ),
+                child: Text('header'),
+              ),
+              ListTile(
+                title: Text(
+                  'something something something something something something something something',
+                  overflow: TextOverflow.ellipsis,
+                ),
+                trailing: CircleAvatar(
+                  child: Text('D'),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
