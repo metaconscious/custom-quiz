@@ -4,7 +4,7 @@ import 'package:custom_quiz/topic.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class Question extends StatelessWidget {
@@ -293,9 +293,9 @@ class _ShortAnswerQuizState extends State<ShortAnswerQuiz> {
 }
 
 class UserAnswerArea extends StatefulWidget {
-  UserAnswerArea({Key? key}) : super(key: key);
+  const UserAnswerArea({Key? key, required this.quizWidgets}) : super(key: key);
 
-  final List<String> ls = List<String>.generate(10, (index) => '$index');
+  final List<Widget> quizWidgets;
 
   @override
   State<UserAnswerArea> createState() => _UserAnswerAreaState();
@@ -314,7 +314,7 @@ class _UserAnswerAreaState extends State<UserAnswerArea> {
 
   void next() {
     setState(() {
-      if (index < widget.ls.length - 1) {
+      if (index < widget.quizWidgets.length - 1) {
         ++index;
       }
     });
@@ -324,7 +324,7 @@ class _UserAnswerAreaState extends State<UserAnswerArea> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(widget.ls.elementAt(index)),
+        widget.quizWidgets.elementAt(index),
         const Divider(),
         ButtonBar(
           children: [
@@ -338,7 +338,12 @@ class _UserAnswerAreaState extends State<UserAnswerArea> {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+
+  final samct = const SingleAnswerMultipleChoiceTopic(
+      question: 'question 0',
+      options: ['option 1', 'option 2', 'option 3', 'option 4'],
+      answer: 2);
 
   final mamct = const MultipleAnswerMultipleChoiceTopic(
       question: 'question 1',
@@ -348,6 +353,23 @@ class MyApp extends StatelessWidget {
   final toft = const TrueOrFalseTopic(question: 'statement 2', answer: false);
 
   final sat = const ShortAnswerTopic(question: 'question 3', answer: 'answer');
+
+  late final List<Widget> widgets = [
+    SingleAnswerMultipleChoiceQuiz(
+      question: samct.question,
+      options: samct.options,
+    ),
+    MultipleAnswerMultipleChoiceQuiz(
+      question: mamct.question,
+      options: mamct.options,
+    ),
+    TrueOrFalseQuiz(
+      question: toft.question,
+    ),
+    ShortAnswerQuiz(
+      question: sat.question,
+    )
+  ];
 
   // This widget is the root of your application.
   @override
@@ -372,7 +394,9 @@ class MyApp extends StatelessWidget {
           // the App.build method, and use it to set our appbar title.
           title: const Text('Hello Flutter'),
         ),
-        body: UserAnswerArea(),
+        body: UserAnswerArea(
+          quizWidgets: widgets,
+        ),
       ),
     );
   }
