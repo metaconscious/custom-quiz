@@ -362,6 +362,33 @@ class QuickToQuiz extends StatelessWidget {
   }
 }
 
+class QuizStateList extends StatelessWidget {
+  QuizStateList({Key? key, required List<Widget> quickToQuizWidgets})
+      : super(key: key) {
+    widgets = [
+      const DrawerHeader(
+        decoration: BoxDecoration(
+          color: Colors.blue,
+        ),
+        child: Text('header'),
+      ),
+    ];
+    widgets.addAll(quickToQuizWidgets);
+  }
+
+  late final List<Widget> widgets;
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: widgets,
+      ),
+    );
+  }
+}
+
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
@@ -425,38 +452,29 @@ class MyApp extends StatelessWidget {
           onPrevButtonClicked: () {},
           onNextButtonClicked: () {},
         ),
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              const DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                ),
-                child: Text('header'),
-              ),
-              QuickToQuiz(
-                question: samct.question,
-                isAnswered: false,
-                onQuickToQuizTapped: () {},
-              ),
-              QuickToQuiz(
-                question: mamct.question,
-                isAnswered: false,
-                onQuickToQuizTapped: () {},
-              ),
-              QuickToQuiz(
-                question: toft.question,
-                isAnswered: false,
-                onQuickToQuizTapped: () {},
-              ),
-              QuickToQuiz(
-                question: sat.question,
-                isAnswered: false,
-                onQuickToQuizTapped: () {},
-              ),
-            ],
-          ),
+        drawer: QuizStateList(
+          quickToQuizWidgets: [
+            QuickToQuiz(
+              question: samct.question,
+              isAnswered: false,
+              onQuickToQuizTapped: () {},
+            ),
+            QuickToQuiz(
+              question: mamct.question,
+              isAnswered: false,
+              onQuickToQuizTapped: () {},
+            ),
+            QuickToQuiz(
+              question: toft.question,
+              isAnswered: false,
+              onQuickToQuizTapped: () {},
+            ),
+            QuickToQuiz(
+              question: sat.question,
+              isAnswered: false,
+              onQuickToQuizTapped: () {},
+            ),
+          ],
         ),
         bottomNavigationBar: const BottomAppBar(),
       ),
