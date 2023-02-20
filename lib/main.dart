@@ -292,48 +292,37 @@ class _ShortAnswerQuizState extends State<ShortAnswerQuiz> {
   }
 }
 
-class UserAnswerArea extends StatefulWidget {
-  const UserAnswerArea({Key? key, required this.quizWidgets}) : super(key: key);
+typedef QuizButtonClickedCallback = void Function();
+
+class UserAnswerArea extends StatelessWidget {
+  const UserAnswerArea(
+      {Key? key,
+      required this.quizWidgets,
+      required this.index,
+      required this.onPrevButtonClicked,
+      required this.onNextButtonClicked})
+      : super(key: key);
 
   final List<Widget> quizWidgets;
+  final int index;
 
-  @override
-  State<UserAnswerArea> createState() => _UserAnswerAreaState();
-}
-
-class _UserAnswerAreaState extends State<UserAnswerArea> {
-  int index = 0;
-
-  void prev() {
-    setState(() {
-      if (index - 1 >= 0) {
-        --index;
-      }
-    });
-  }
-
-  void next() {
-    setState(() {
-      if (index < widget.quizWidgets.length - 1) {
-        ++index;
-      }
-    });
-  }
+  final QuizButtonClickedCallback onPrevButtonClicked;
+  final QuizButtonClickedCallback onNextButtonClicked;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        widget.quizWidgets.elementAt(index),
+        quizWidgets.elementAt(index),
         const Divider(),
         ButtonBar(
           children: [
             FloatingActionButton(
-              onPressed: () => {prev()},
+              onPressed: onPrevButtonClicked,
               child: const Text('Prev'),
             ),
             FloatingActionButton(
-              onPressed: () => {next()},
+              onPressed: onNextButtonClicked,
               child: const Text('Next'),
             ),
           ],
@@ -402,6 +391,9 @@ class MyApp extends StatelessWidget {
         ),
         body: UserAnswerArea(
           quizWidgets: widgets,
+          index: 0,
+          onPrevButtonClicked: () {},
+          onNextButtonClicked: () {},
         ),
         drawer: Drawer(
           child: ListView(
