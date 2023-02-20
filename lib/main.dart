@@ -476,7 +476,6 @@ class MyApp extends StatelessWidget {
             ),
           ],
         ),
-        bottomNavigationBar: const BottomAppBar(),
       ),
     );
   }
