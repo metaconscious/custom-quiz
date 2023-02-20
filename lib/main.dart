@@ -256,6 +256,43 @@ class _TrueOrFalseQuizState extends State<TrueOrFalseQuiz> {
   }
 }
 
+typedef TextFieldChangedCallback = void Function(String text);
+
+class ShortAnswerQuiz extends StatefulWidget {
+  const ShortAnswerQuiz({Key? key, required this.question}) : super(key: key);
+
+  final String question;
+
+  @override
+  State<ShortAnswerQuiz> createState() => _ShortAnswerQuizState();
+}
+
+class _ShortAnswerQuizState extends State<ShortAnswerQuiz> {
+
+  String userInput = '';
+
+  void _handleTextFieldChanged(String text) {
+    setState(() {
+      userInput = text;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Column(
+        children: [
+          Question(question: widget.question),
+          const Divider(),
+          TextField(
+            onChanged: (text) => {_handleTextFieldChanged(text)},
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -265,6 +302,8 @@ class MyApp extends StatelessWidget {
       answer: [true, false, false, true]);
 
   final toft = const TrueOrFalseTopic(question: 'statement 2', answer: false);
+
+  final sat = const ShortAnswerTopic(question: 'question 3', answer: 'answer');
 
   // This widget is the root of your application.
   @override
@@ -289,7 +328,7 @@ class MyApp extends StatelessWidget {
           // the App.build method, and use it to set our appbar title.
           title: const Text('Hello Flutter'),
         ),
-        body: TrueOrFalseQuiz(question: toft.question),
+        body: ShortAnswerQuiz(question: sat.question),
       ),
     );
   }
