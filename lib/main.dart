@@ -328,8 +328,14 @@ class _UserAnswerAreaState extends State<UserAnswerArea> {
         const Divider(),
         ButtonBar(
           children: [
-            TextButton(onPressed: () => {prev()}, child: const Text('Prev')),
-            TextButton(onPressed: () => {next()}, child: const Text('Next')),
+            FloatingActionButton(
+              onPressed: () => {prev()},
+              child: const Text('Prev'),
+            ),
+            FloatingActionButton(
+              onPressed: () => {next()},
+              child: const Text('Next'),
+            ),
           ],
         ),
       ],
@@ -392,7 +398,7 @@ class MyApp extends StatelessWidget {
         appBar: AppBar(
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
-          title: const Text('Hello Flutter'),
+          title: const Text('Quiz Set Title'),
         ),
         body: UserAnswerArea(
           quizWidgets: widgets,
@@ -450,6 +456,7 @@ class MyApp extends StatelessWidget {
             ],
           ),
         ),
+        bottomNavigationBar: const BottomAppBar(),
       ),
     );
   }
