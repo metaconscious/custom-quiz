@@ -332,6 +332,36 @@ class UserAnswerArea extends StatelessWidget {
   }
 }
 
+typedef QuickToQuizTapped = void Function();
+
+class QuickToQuiz extends StatelessWidget {
+  const QuickToQuiz(
+      {Key? key,
+      required this.question,
+      required this.isAnswered,
+      required this.onQuickToQuizTapped})
+      : super(key: key);
+
+  final String question;
+  final bool isAnswered;
+
+  final QuickToQuizTapped onQuickToQuizTapped;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(
+        question,
+        overflow: TextOverflow.ellipsis,
+      ),
+      trailing: const CircleAvatar(
+        child: Text('D'),
+      ),
+      onTap: onQuickToQuizTapped,
+    );
+  }
+}
+
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
@@ -405,45 +435,25 @@ class MyApp extends StatelessWidget {
                 ),
                 child: Text('header'),
               ),
-              ListTile(
-                title: Text(
-                  samct.question,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                trailing: const CircleAvatar(
-                  child: Text('D'),
-                ),
-                onTap: () {},
+              QuickToQuiz(
+                question: samct.question,
+                isAnswered: false,
+                onQuickToQuizTapped: () {},
               ),
-              ListTile(
-                title: Text(
-                  mamct.question,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                trailing: const CircleAvatar(
-                  child: Text('D'),
-                ),
-                onTap: () {},
+              QuickToQuiz(
+                question: mamct.question,
+                isAnswered: false,
+                onQuickToQuizTapped: () {},
               ),
-              ListTile(
-                title: Text(
-                  toft.question,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                trailing: const CircleAvatar(
-                  child: Text('D'),
-                ),
-                onTap: () {},
+              QuickToQuiz(
+                question: toft.question,
+                isAnswered: false,
+                onQuickToQuizTapped: () {},
               ),
-              ListTile(
-                title: Text(
-                  sat.question,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                trailing: const CircleAvatar(
-                  child: Text('D'),
-                ),
-                onTap: () {},
+              QuickToQuiz(
+                question: sat.question,
+                isAnswered: false,
+                onQuickToQuizTapped: () {},
               ),
             ],
           ),
