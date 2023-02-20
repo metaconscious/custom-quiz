@@ -268,7 +268,6 @@ class ShortAnswerQuiz extends StatefulWidget {
 }
 
 class _ShortAnswerQuizState extends State<ShortAnswerQuiz> {
-
   String userInput = '';
 
   void _handleTextFieldChanged(String text) {
@@ -289,6 +288,51 @@ class _ShortAnswerQuizState extends State<ShortAnswerQuiz> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class UserAnswerArea extends StatefulWidget {
+  UserAnswerArea({Key? key}) : super(key: key);
+
+  final List<String> ls = List<String>.generate(10, (index) => '$index');
+
+  @override
+  State<UserAnswerArea> createState() => _UserAnswerAreaState();
+}
+
+class _UserAnswerAreaState extends State<UserAnswerArea> {
+  int index = 0;
+
+  void prev() {
+    setState(() {
+      if (index - 1 >= 0) {
+        --index;
+      }
+    });
+  }
+
+  void next() {
+    setState(() {
+      if (index < widget.ls.length - 1) {
+        ++index;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(widget.ls.elementAt(index)),
+        const Divider(),
+        ButtonBar(
+          children: [
+            TextButton(onPressed: () => {prev()}, child: const Text('Prev')),
+            TextButton(onPressed: () => {next()}, child: const Text('Next')),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -328,18 +372,7 @@ class MyApp extends StatelessWidget {
           // the App.build method, and use it to set our appbar title.
           title: const Text('Hello Flutter'),
         ),
-        body: Column(
-          children: [
-            ShortAnswerQuiz(question: sat.question),
-            const Divider(),
-            ButtonBar(
-              children: [
-                TextButton(onPressed: () => {}, child: const Text('Prev')),
-                TextButton(onPressed: () => {}, child: const Text('Next')),
-              ],
-            ),
-          ],
-        ),
+        body: UserAnswerArea(),
       ),
     );
   }
