@@ -328,7 +328,18 @@ class MyApp extends StatelessWidget {
           // the App.build method, and use it to set our appbar title.
           title: const Text('Hello Flutter'),
         ),
-        body: ShortAnswerQuiz(question: sat.question),
+        body: Column(
+          children: [
+            ShortAnswerQuiz(question: sat.question),
+            const Divider(),
+            ButtonBar(
+              children: [
+                TextButton(onPressed: () => {}, child: const Text('Prev')),
+                TextButton(onPressed: () => {}, child: const Text('Next')),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
