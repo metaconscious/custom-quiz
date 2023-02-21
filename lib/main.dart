@@ -292,47 +292,128 @@ class _ShortAnswerQuizState extends State<ShortAnswerQuiz> {
   }
 }
 
-class UserAnswerArea extends StatefulWidget {
-  const UserAnswerArea({Key? key, required this.quizWidgets}) : super(key: key);
+typedef QuizButtonClickedCallback = void Function();
+
+class UserAnswerArea extends StatelessWidget {
+  const UserAnswerArea(
+      {Key? key,
+      required this.quizWidgets,
+      required this.index,
+      required this.onPrevButtonClicked,
+      required this.onNextButtonClicked})
+      : super(key: key);
 
   final List<Widget> quizWidgets;
+  final int index;
 
-  @override
-  State<UserAnswerArea> createState() => _UserAnswerAreaState();
-}
-
-class _UserAnswerAreaState extends State<UserAnswerArea> {
-  int index = 0;
-
-  void prev() {
-    setState(() {
-      if (index - 1 >= 0) {
-        --index;
-      }
-    });
-  }
-
-  void next() {
-    setState(() {
-      if (index < widget.quizWidgets.length - 1) {
-        ++index;
-      }
-    });
-  }
+  final QuizButtonClickedCallback onPrevButtonClicked;
+  final QuizButtonClickedCallback onNextButtonClicked;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        widget.quizWidgets.elementAt(index),
+        quizWidgets.elementAt(index),
         const Divider(),
         ButtonBar(
           children: [
-            TextButton(onPressed: () => {prev()}, child: const Text('Prev')),
-            TextButton(onPressed: () => {next()}, child: const Text('Next')),
+            FloatingActionButton(
+              onPressed: onPrevButtonClicked,
+              child: const Text('Prev'),
+            ),
+            FloatingActionButton(
+              onPressed: onNextButtonClicked,
+              child: const Text('Next'),
+            ),
           ],
         ),
       ],
+    );
+  }
+}
+
+typedef QuickToQuizTapped = void Function();
+
+class QuickToQuiz extends StatelessWidget {
+  const QuickToQuiz(
+      {Key? key,
+      required this.question,
+      required this.isAnswered,
+      required this.onQuickToQuizTapped})
+      : super(key: key);
+
+  final String question;
+  final bool isAnswered;
+
+  final QuickToQuizTapped onQuickToQuizTapped;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(
+        question,
+        overflow: TextOverflow.ellipsis,
+      ),
+      trailing: const CircleAvatar(
+        child: Text('D'),
+      ),
+      onTap: onQuickToQuizTapped,
+    );
+  }
+}
+
+class QuizStateList extends StatelessWidget {
+  QuizStateList({Key? key, required List<Widget> quickToQuizWidgets})
+      : super(key: key) {
+    widgets = [
+      const DrawerHeader(
+        decoration: BoxDecoration(
+          color: Colors.blue,
+        ),
+        child: Text('header'),
+      ),
+    ];
+    widgets.addAll(quickToQuizWidgets);
+  }
+
+  late final List<Widget> widgets;
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: widgets,
+      ),
+    );
+  }
+}
+
+class QuizScreen extends StatelessWidget {
+  const QuizScreen(
+      {Key? key, required this.quizWidgets, required this.qtqWidgets})
+      : super(key: key);
+
+  final List<Widget> quizWidgets;
+  final List<Widget> qtqWidgets;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        title: const Text('Quiz Set Title'),
+      ),
+      body: UserAnswerArea(
+        quizWidgets: quizWidgets,
+        index: 0,
+        onPrevButtonClicked: () {},
+        onNextButtonClicked: () {},
+      ),
+      drawer: QuizStateList(
+        quickToQuizWidgets: qtqWidgets,
+      ),
     );
   }
 }
@@ -388,15 +469,30 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          // Here we take the value from the MyHomePage object that was created by
-          // the App.build method, and use it to set our appbar title.
-          title: const Text('Hello Flutter'),
-        ),
-        body: UserAnswerArea(
-          quizWidgets: widgets,
-        ),
+      home: QuizScreen(
+        quizWidgets: widgets,
+        qtqWidgets: [
+          QuickToQuiz(
+            question: samct.question,
+            isAnswered: false,
+            onQuickToQuizTapped: () {},
+          ),
+          QuickToQuiz(
+            question: mamct.question,
+            isAnswered: false,
+            onQuickToQuizTapped: () {},
+          ),
+          QuickToQuiz(
+            question: toft.question,
+            isAnswered: false,
+            onQuickToQuizTapped: () {},
+          ),
+          QuickToQuiz(
+            question: sat.question,
+            isAnswered: false,
+            onQuickToQuizTapped: () {},
+          ),
+        ],
       ),
     );
   }
