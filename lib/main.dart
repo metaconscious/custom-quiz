@@ -389,6 +389,35 @@ class QuizStateList extends StatelessWidget {
   }
 }
 
+class QuizScreen extends StatelessWidget {
+  const QuizScreen(
+      {Key? key, required this.quizWidgets, required this.qtqWidgets})
+      : super(key: key);
+
+  final List<Widget> quizWidgets;
+  final List<Widget> qtqWidgets;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        title: const Text('Quiz Set Title'),
+      ),
+      body: UserAnswerArea(
+        quizWidgets: quizWidgets,
+        index: 0,
+        onPrevButtonClicked: () {},
+        onNextButtonClicked: () {},
+      ),
+      drawer: QuizStateList(
+        quickToQuizWidgets: qtqWidgets,
+      ),
+    );
+  }
+}
+
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
@@ -440,42 +469,30 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          // Here we take the value from the MyHomePage object that was created by
-          // the App.build method, and use it to set our appbar title.
-          title: const Text('Quiz Set Title'),
-        ),
-        body: UserAnswerArea(
-          quizWidgets: widgets,
-          index: 0,
-          onPrevButtonClicked: () {},
-          onNextButtonClicked: () {},
-        ),
-        drawer: QuizStateList(
-          quickToQuizWidgets: [
-            QuickToQuiz(
-              question: samct.question,
-              isAnswered: false,
-              onQuickToQuizTapped: () {},
-            ),
-            QuickToQuiz(
-              question: mamct.question,
-              isAnswered: false,
-              onQuickToQuizTapped: () {},
-            ),
-            QuickToQuiz(
-              question: toft.question,
-              isAnswered: false,
-              onQuickToQuizTapped: () {},
-            ),
-            QuickToQuiz(
-              question: sat.question,
-              isAnswered: false,
-              onQuickToQuizTapped: () {},
-            ),
-          ],
-        ),
+      home: QuizScreen(
+        quizWidgets: widgets,
+        qtqWidgets: [
+          QuickToQuiz(
+            question: samct.question,
+            isAnswered: false,
+            onQuickToQuizTapped: () {},
+          ),
+          QuickToQuiz(
+            question: mamct.question,
+            isAnswered: false,
+            onQuickToQuizTapped: () {},
+          ),
+          QuickToQuiz(
+            question: toft.question,
+            isAnswered: false,
+            onQuickToQuizTapped: () {},
+          ),
+          QuickToQuiz(
+            question: sat.question,
+            isAnswered: false,
+            onQuickToQuizTapped: () {},
+          ),
+        ],
       ),
     );
   }
