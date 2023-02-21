@@ -1,4 +1,5 @@
 import 'package:custom_quiz/models/topic.dart';
+import 'package:custom_quiz/screens/home.dart';
 import 'package:custom_quiz/screens/quiz.dart';
 import 'package:flutter/material.dart';
 
@@ -57,39 +58,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Home'),
-        ),
-        body: const Center(
-          child: Text('Body'),
-        ),
-        bottomNavigationBar: BottomAppBar(
-          color: Colors.blue,
-          shape: const CircularNotchedRectangle(),
-          child: Row(
-            children: [
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.history),
-                tooltip: 'History',
-              ),
-              const Spacer(),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.person),
-                tooltip: 'Statistics',
-              )
-            ],
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          tooltip: 'Create',
-          child: const Icon(Icons.add),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      ),
+      home: HomeScreen(),
     );
   }
 }
