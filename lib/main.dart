@@ -69,9 +69,17 @@ class MyApp extends StatelessWidget {
           shape: const CircularNotchedRectangle(),
           child: Row(
             children: [
-              IconButton(onPressed: () {}, icon: const Icon(Icons.menu)),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.history),
+                tooltip: 'History',
+              ),
               const Spacer(),
-              IconButton(onPressed: () {}, icon: const Icon(Icons.person))
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.person),
+                tooltip: 'Statistics',
+              )
             ],
           ),
         ),
