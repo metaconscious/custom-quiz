@@ -64,7 +64,23 @@ class MyApp extends StatelessWidget {
         body: const Center(
           child: Text('Body'),
         ),
-        bottomNavigationBar: const BottomAppBar(),
+        bottomNavigationBar: BottomAppBar(
+          color: Colors.blue,
+          shape: const CircularNotchedRectangle(),
+          child: Row(
+            children: [
+              IconButton(onPressed: () {}, icon: const Icon(Icons.menu)),
+              const Spacer(),
+              IconButton(onPressed: () {}, icon: const Icon(Icons.person))
+            ],
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {},
+          tooltip: 'Create',
+          child: const Icon(Icons.add),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
     );
   }
