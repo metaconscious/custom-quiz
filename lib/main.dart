@@ -69,6 +69,10 @@ class TopicModel extends ChangeNotifier {
     return topics.elementAt(index);
   }
 
+  int indexOf(Topic topic) {
+    return topics.indexOf(topic);
+  }
+
   void remove(Topic topic) {
     topics.remove(topic);
     notifyListeners();
