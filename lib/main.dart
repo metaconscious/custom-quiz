@@ -88,6 +88,20 @@ class TopicModel extends ChangeNotifier {
     topics.addAll(newTopics);
     notifyListeners();
   }
+
+  List<Topic> getAllByTopicType(TopicTypes topicType) {
+    return topics.expand((e) => [if (e.topicType == topicType) e]).toList();
+  }
+
+  List<Topic> getAllByQuestionType(QuestionTypes questionType) {
+    return topics
+        .expand((e) => [if (e.questionType == questionType) e])
+        .toList();
+  }
+
+  List<Topic> getAllByAnswerType(AnswerTypes answerType) {
+    return topics.expand((e) => [if (e.answerType == answerType) e]).toList();
+  }
 }
 
 class Result {
