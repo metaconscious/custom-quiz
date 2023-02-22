@@ -207,6 +207,55 @@ class Result {
   }
 }
 
+class ResultModel extends ChangeNotifier {
+  ResultModel({required this.topic});
+
+  late final TopicModel topic;
+
+  final List<Result> results = [];
+
+  Result elementAt(int index) {
+    return results.elementAt(index);
+  }
+
+  int indexOf(Result result) {
+    return results.indexOf(result);
+  }
+
+  void remove(Result result) {
+    results.remove(result);
+    notifyListeners();
+  }
+
+  void removeAt(int index) {
+    results.removeAt(index);
+    notifyListeners();
+  }
+
+  void clear() {
+    results.clear();
+    notifyListeners();
+  }
+
+  void add(Result newResult) {
+    results.add(newResult);
+    notifyListeners();
+  }
+
+  void addAll(Iterable<Result> newResult) {
+    results.addAll(newResult);
+    notifyListeners();
+  }
+
+  Topic correspondedTopicAt(int index) {
+    return topic.elementAt(results.elementAt(index).index);
+  }
+
+  Topic correspondedTopicOf(Result result) {
+    return topic.elementAt(results.elementAt(results.indexOf(result)).index);
+  }
+}
+
 class QuizModel extends ChangeNotifier {
   QuizModel({required this.topicIndexes});
 
