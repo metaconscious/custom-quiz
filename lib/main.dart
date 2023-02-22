@@ -40,6 +40,20 @@ class Topic {
 class TopicModel extends ChangeNotifier {
   final List<Topic> topics = [];
 
+  Topic elementAt(int index) {
+    return topics.elementAt(index);
+  }
+
+  void remove(Topic topic) {
+    topics.remove(topic);
+    notifyListeners();
+  }
+
+  void removeAt(int index) {
+    topics.removeAt(index);
+    notifyListeners();
+  }
+
   void add(Topic newTopic) {
     topics.add(newTopic);
     notifyListeners();
