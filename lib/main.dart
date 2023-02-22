@@ -173,7 +173,26 @@ class Result {
   }
 }
 
-class QuizModel extends ChangeNotifier {}
+class QuizSetModel extends ChangeNotifier {
+
+}
+
+class QuizModel extends ChangeNotifier {
+  QuizModel({required this.topicIndexes});
+
+  late TopicModel _topic;
+
+  final List<int> topicIndexes;
+
+  set topic(TopicModel value) {
+    _topic = value;
+    notifyListeners();
+  }
+
+  List<Topic> get topics {
+    return topicIndexes.map((e) => _topic.elementAt(e)).toList();
+  }
+}
 
 void main() {
   runApp(const MyApp());
