@@ -114,9 +114,7 @@ class TopicModel extends ChangeNotifier {
 }
 
 class TopicSetModel extends ChangeNotifier {
-  TopicSetModel({required this.topicModel});
-
-  final TopicModel topicModel;
+  late final TopicModel topicModel;
 
   final List<int> _indexes = [];
 
@@ -208,9 +206,7 @@ class Result {
 }
 
 class ResultModel extends ChangeNotifier {
-  ResultModel({required this.topicModel});
-
-  final TopicModel topicModel;
+  late final TopicModel topicModel;
 
   final List<Result> results = [];
 
@@ -258,10 +254,8 @@ class ResultModel extends ChangeNotifier {
 }
 
 class ResultSetModel extends ChangeNotifier {
-  ResultSetModel({required this.topicModel, required this.resultModel});
-
-  final TopicModel topicModel;
-  final ResultModel resultModel;
+  late final TopicModel topicModel;
+  late final ResultModel resultModel;
 
   final List<int> _indexes = [];
 
@@ -323,7 +317,38 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider(create: (context) => null),
+        ChangeNotifierProvider(create: (context) => TopicModel()),
+        ChangeNotifierProxyProvider<TopicModel, TopicSetModel>(
+          create: (context) => TopicSetModel(),
+          update: (context, topicModel, topicSetModel) {
+            if (topicSetModel == null) {
+              throw ArgumentError.notNull('topicSetModel');
+            }
+            topicSetModel.topicModel = topicModel;
+            return topicSetModel;
+          },
+        ),
+        ChangeNotifierProxyProvider<TopicModel, ResultModel>(
+          create: (context) => ResultModel(),
+          update: (context, topicModel, resultModel) {
+            if (resultModel == null) {
+              throw ArgumentError.notNull('resultModel');
+            }
+            resultModel.topicModel = topicModel;
+            return resultModel;
+          },
+        ),
+        ChangeNotifierProxyProvider2<TopicModel, ResultModel, ResultSetModel>(
+          create: (context) => ResultSetModel(),
+          update: (context, topicModel, resultModel, resultSetModel) {
+            if (resultSetModel == null) {
+              throw ArgumentError.notNull('resultModel');
+            }
+            resultSetModel.topicModel = topicModel;
+            resultSetModel.resultModel = resultModel;
+            return resultSetModel;
+          },
+        ),
       ],
       child: MaterialApp.router(
         title: 'Custom Quiz',
