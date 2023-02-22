@@ -114,9 +114,24 @@ class TopicModel extends ChangeNotifier {
 }
 
 class Result {
-  Result({required this.topic}) {}
+  Result(Topic topic) {
+    switch (topic.topicType) {
+      case TopicTypes.single:
+      case TopicTypes.multiple:
+      case TopicTypes.judge:
+        _multipleChoiceResultList =
+            List<bool>.filled(topic.multipleChoiceAnswerList!.length, false);
+        break;
+      case TopicTypes.blank:
+        _blankFillingResultList =
+            List<String>.filled(topic.blankFillingAnswerList!.length, '');
+        break;
+      case TopicTypes.ask:
+        _shortAskResult = '';
+        break;
+    }
+  }
 
-  final Topic topic;
   List<bool>? _multipleChoiceResultList;
   List<String>? _blankFillingResultList;
   String? _shortAskResult;
@@ -158,10 +173,7 @@ class Result {
 }
 
 class QuizModel extends ChangeNotifier {
-  QuizModel({required this.topic}) : result = Result(topic: topic);
 
-  final Topic topic;
-  late Result result;
 }
 
 void main() {
