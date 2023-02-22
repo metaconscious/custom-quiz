@@ -1,31 +1,54 @@
-abstract class Topic<Answer> {
-  const Topic({required this.question, required this.answer});
+import 'package:flutter/cupertino.dart';
 
-  final String question;
-  final Answer answer;
-}
+import '../common/models.dart';
 
-class TrueOrFalseTopic extends Topic<bool> {
-  const TrueOrFalseTopic({required super.question, required super.answer});
-}
+class TopicModel extends ChangeNotifier {
+  final List<Topic> topics = [];
 
-class ShortAnswerTopic extends Topic<String> {
-  const ShortAnswerTopic({required super.question, required super.answer});
-}
+  Topic elementAt(int index) {
+    return topics.elementAt(index);
+  }
 
-abstract class MultipleChoiceTopic<Answer> extends Topic<Answer> {
-  const MultipleChoiceTopic(
-      {required super.question, required super.answer, required this.options});
+  int indexOf(Topic topic) {
+    return topics.indexOf(topic);
+  }
 
-  final List<String> options;
-}
+  void remove(Topic topic) {
+    topics.remove(topic);
+    notifyListeners();
+  }
 
-class SingleAnswerMultipleChoiceTopic extends MultipleChoiceTopic<int> {
-  const SingleAnswerMultipleChoiceTopic(
-      {required super.question, required super.options, required super.answer});
-}
+  void removeAt(int index) {
+    topics.removeAt(index);
+    notifyListeners();
+  }
 
-class MultipleAnswerMultipleChoiceTopic extends MultipleChoiceTopic<List<bool>> {
-  const MultipleAnswerMultipleChoiceTopic(
-      {required super.question, required super.options, required super.answer});
+  void clear() {
+    topics.clear();
+    notifyListeners();
+  }
+
+  void add(Topic newTopic) {
+    topics.add(newTopic);
+    notifyListeners();
+  }
+
+  void addAll(Iterable<Topic> newTopics) {
+    topics.addAll(newTopics);
+    notifyListeners();
+  }
+
+  List<Topic> getAllByTopicType(TopicTypes topicType) {
+    return topics.expand((e) => [if (e.topicType == topicType) e]).toList();
+  }
+
+  List<Topic> getAllByQuestionType(QuestionTypes questionType) {
+    return topics
+        .expand((e) => [if (e.questionType == questionType) e])
+        .toList();
+  }
+
+  List<Topic> getAllByAnswerType(AnswerTypes answerType) {
+    return topics.expand((e) => [if (e.answerType == answerType) e]).toList();
+  }
 }
