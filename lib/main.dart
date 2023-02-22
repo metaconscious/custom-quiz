@@ -79,6 +79,11 @@ class TopicModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clear() {
+    topics.clear();
+    notifyListeners();
+  }
+
   void add(Topic newTopic) {
     topics.add(newTopic);
     notifyListeners();
