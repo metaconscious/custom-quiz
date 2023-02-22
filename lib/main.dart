@@ -114,9 +114,9 @@ class TopicModel extends ChangeNotifier {
 }
 
 class TopicSetModel extends ChangeNotifier {
-  TopicSetModel({required this.topic});
+  TopicSetModel({required this.topicModel});
 
-  late final TopicModel topic;
+  final TopicModel topicModel;
 
   final List<int> _indexes = [];
 
@@ -143,12 +143,12 @@ class TopicSetModel extends ChangeNotifier {
   }
 
   List<Topic> get topics {
-    return _indexes.map((e) => topic.elementAt(e)).toList();
+    return _indexes.map((e) => topicModel.elementAt(e)).toList();
   }
 }
 
 class Result {
-  Result(Topic topic, {required this.index}) {
+  Result(Topic topic, {required this.topicIndex}) {
     switch (topic.topicType) {
       case TopicTypes.single:
       case TopicTypes.multiple:
@@ -166,7 +166,7 @@ class Result {
     }
   }
 
-  final int index;
+  final int topicIndex;
   List<bool>? _multipleChoiceResultList;
   List<String>? _blankFillingResultList;
   String? _shortAskResult;
@@ -208,9 +208,9 @@ class Result {
 }
 
 class ResultModel extends ChangeNotifier {
-  ResultModel({required this.topic});
+  ResultModel({required this.topicModel});
 
-  late final TopicModel topic;
+  final TopicModel topicModel;
 
   final List<Result> results = [];
 
@@ -248,11 +248,51 @@ class ResultModel extends ChangeNotifier {
   }
 
   Topic correspondedTopicAt(int index) {
-    return topic.elementAt(results.elementAt(index).index);
+    return topicModel.elementAt(results.elementAt(index).topicIndex);
   }
 
   Topic correspondedTopicOf(Result result) {
-    return topic.elementAt(results.elementAt(results.indexOf(result)).index);
+    return topicModel
+        .elementAt(results.elementAt(results.indexOf(result)).topicIndex);
+  }
+}
+
+class ResultSetModel extends ChangeNotifier {
+  ResultSetModel({required this.topicModel, required this.resultModel});
+
+  final TopicModel topicModel;
+  final ResultModel resultModel;
+
+  final List<int> _indexes = [];
+
+  List<int> get indexes => _indexes;
+
+  void add(int index) {
+    _indexes.add(index);
+    notifyListeners();
+  }
+
+  void addAll(Iterable<int> indexes) {
+    _indexes.addAll(indexes);
+    notifyListeners();
+  }
+
+  void remove(int value) {
+    _indexes.remove(value);
+    notifyListeners();
+  }
+
+  void removeAt(int index) {
+    _indexes.removeAt(index);
+    notifyListeners();
+  }
+
+  List<Result> get results {
+    return _indexes.map((e) => resultModel.elementAt(e)).toList();
+  }
+
+  List<Topic> get topics {
+    return results.map((e) => topicModel.elementAt(e.topicIndex)).toList();
   }
 }
 
