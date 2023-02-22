@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -18,13 +19,17 @@ class HomeScreen extends StatelessWidget {
         child: Row(
           children: [
             IconButton(
-              onPressed: () {},
+              onPressed: () => context.go('/topics'),
+              icon: const Icon(Icons.list),
+            ),
+            IconButton(
+              onPressed: () => context.go('/history'),
               icon: const Icon(Icons.history),
               tooltip: 'History',
             ),
             const Spacer(),
             IconButton(
-              onPressed: () {},
+              onPressed: () => context.go('/user-info'),
               icon: const Icon(Icons.person),
               tooltip: 'Statistics',
             )
@@ -32,7 +37,7 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () => context.go('/new-topic'),
         tooltip: 'Create',
         child: const Icon(Icons.add),
       ),

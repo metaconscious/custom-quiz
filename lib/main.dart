@@ -15,11 +15,28 @@ void main() {
 
 GoRouter router() {
   return GoRouter(
-    initialLocation: '/home',
+    initialLocation: '/',
     routes: [
       GoRoute(
-        path: '/home',
+        path: '/',
         builder: (context, state) => const HomeScreen(),
+        routes: [
+          GoRoute(
+            path: 'new-topic',
+            builder: (context, state) => Scaffold(
+              appBar: AppBar(
+                title: const Text('Create New Topic'),
+                actions: [
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.save),
+                  ),
+                ],
+              ),
+              body: const Placeholder(),
+            ),
+          ),
+        ],
       ),
       GoRoute(
         path: '/quiz',
