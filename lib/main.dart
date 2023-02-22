@@ -113,6 +113,36 @@ class TopicModel extends ChangeNotifier {
   }
 }
 
+class TopicSetModel extends ChangeNotifier {
+  TopicSetModel({required this.topics});
+
+  late final TopicModel topics;
+
+  final List<int> _indexes = [];
+
+  List<int> get indexes => _indexes;
+
+  void add(int index) {
+    _indexes.add(index);
+    notifyListeners();
+  }
+
+  void addAll(Iterable<int> indexes) {
+    _indexes.addAll(indexes);
+    notifyListeners();
+  }
+
+  void remove(int value) {
+    _indexes.remove(value);
+    notifyListeners();
+  }
+
+  void removeAt(int index) {
+    _indexes.removeAt(index);
+    notifyListeners();
+  }
+}
+
 class Result {
   Result(Topic topic, {required this.index}) {
     switch (topic.topicType) {
@@ -173,10 +203,6 @@ class Result {
   }
 }
 
-class QuizSetModel extends ChangeNotifier {
-
-}
-
 class QuizModel extends ChangeNotifier {
   QuizModel({required this.topicIndexes});
 
@@ -192,6 +218,10 @@ class QuizModel extends ChangeNotifier {
   List<Topic> get topics {
     return topicIndexes.map((e) => _topic.elementAt(e)).toList();
   }
+}
+
+class QuizSetModel extends ChangeNotifier {
+
 }
 
 void main() {
