@@ -114,9 +114,9 @@ class TopicModel extends ChangeNotifier {
 }
 
 class TopicSetModel extends ChangeNotifier {
-  TopicSetModel({required this.topics});
+  TopicSetModel({required this.topic});
 
-  late final TopicModel topics;
+  late final TopicModel topic;
 
   final List<int> _indexes = [];
 
@@ -140,6 +140,10 @@ class TopicSetModel extends ChangeNotifier {
   void removeAt(int index) {
     _indexes.removeAt(index);
     notifyListeners();
+  }
+
+  List<Topic> get topics {
+    return _indexes.map((e) => topic.elementAt(e)).toList();
   }
 }
 
@@ -220,9 +224,7 @@ class QuizModel extends ChangeNotifier {
   }
 }
 
-class QuizSetModel extends ChangeNotifier {
-
-}
+class QuizSetModel extends ChangeNotifier {}
 
 void main() {
   runApp(const MyApp());
