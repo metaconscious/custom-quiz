@@ -16,6 +16,14 @@ enum AnswerTypes {
   multiple,
 }
 
+enum TopicTypes {
+  single,
+  multiple,
+  judge,
+  blank,
+  ask,
+}
+
 @immutable
 class Topic {
   const Topic({
@@ -35,6 +43,23 @@ class Topic {
   final List<String>? multipleChoiceOptions;
   final List<String>? blankFillingAnswerList;
   final String? shortAskAnswer;
+
+  TopicTypes get topicType {
+    switch (questionType) {
+      case QuestionTypes.multipleChoice:
+        if (answerType == AnswerTypes.unique) {
+          return TopicTypes.single;
+        } else {
+          return TopicTypes.multiple;
+        }
+      case QuestionTypes.trueOrFalse:
+        return TopicTypes.judge;
+      case QuestionTypes.blankFilling:
+        return TopicTypes.blank;
+      case QuestionTypes.shortAsk:
+        return TopicTypes.ask;
+    }
+  }
 }
 
 class TopicModel extends ChangeNotifier {
@@ -66,17 +91,7 @@ class TopicModel extends ChangeNotifier {
 }
 
 class Result {
-  Result({required this.topic}) {
-    if (topic.multipleChoiceAnswerList != null) {
-      _multipleChoiceResultList =
-          List<bool>.filled(topic.multipleChoiceAnswerList!.length, false);
-    } else if (topic.blankFillingAnswerList != null) {
-      _blankFillingResultList =
-          List<String>.filled(topic.blankFillingAnswerList!.length, '');
-    } else if (topic.shortAskAnswer != null) {
-      _shortAskResult = '';
-    }
-  }
+  Result({required this.topic}) {}
 
   final Topic topic;
   List<bool>? _multipleChoiceResultList;
