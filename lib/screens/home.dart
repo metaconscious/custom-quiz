@@ -21,6 +21,7 @@ class HomeScreen extends StatelessWidget {
             IconButton(
               onPressed: () => context.go('/topics'),
               icon: const Icon(Icons.list),
+              tooltip: 'Topic List',
             ),
             IconButton(
               onPressed: () => context.go('/history'),
@@ -31,7 +32,7 @@ class HomeScreen extends StatelessWidget {
             IconButton(
               onPressed: () => context.go('/user-info'),
               icon: const Icon(Icons.person),
-              tooltip: 'Statistics',
+              tooltip: 'User Info',
             )
           ],
         ),
