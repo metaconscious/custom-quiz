@@ -114,7 +114,7 @@ class TopicModel extends ChangeNotifier {
 }
 
 class Result {
-  Result(Topic topic) {
+  Result(Topic topic, {required this.index}) {
     switch (topic.topicType) {
       case TopicTypes.single:
       case TopicTypes.multiple:
@@ -132,6 +132,7 @@ class Result {
     }
   }
 
+  final int index;
   List<bool>? _multipleChoiceResultList;
   List<String>? _blankFillingResultList;
   String? _shortAskResult;
@@ -172,9 +173,7 @@ class Result {
   }
 }
 
-class QuizModel extends ChangeNotifier {
-
-}
+class QuizModel extends ChangeNotifier {}
 
 void main() {
   runApp(const MyApp());
