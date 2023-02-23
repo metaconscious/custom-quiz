@@ -56,10 +56,29 @@ class Topic {
         return TopicTypes.ask;
     }
   }
+
+  Topic.fromJson(Map<String, dynamic> json)
+      : question = json['question'],
+        questionType = json['questionType'],
+        answerType = json['answerType'],
+        multipleChoiceAnswerList = json['multipleChoiceAnswerList'],
+        multipleChoiceOptions = json['multipleChoiceOptions'],
+        blankFillingAnswerList = json['blankFillingAnswerList'],
+        shortAskAnswer = json['shortAskAnswer'];
+
+  Map<String, dynamic> toJson() => {
+        'question': question,
+        'questionType': questionType,
+        'answerType': answerType,
+        'multipleChoiceAnswerList': multipleChoiceAnswerList,
+        'multipleChoiceOptions': multipleChoiceOptions,
+        'blankFillingAnswerList': blankFillingAnswerList,
+        'shortAskAnswer': shortAskAnswer,
+      };
 }
 
 class Result {
-  Result(Topic topic, {required this.topicIndex}) {
+  Result(Topic topic) {
     switch (topic.topicType) {
       case TopicTypes.single:
       case TopicTypes.multiple:
@@ -77,7 +96,6 @@ class Result {
     }
   }
 
-  final int topicIndex;
   List<bool>? _multipleChoiceResultList;
   List<String>? _blankFillingResultList;
   String? _shortAskResult;
@@ -116,4 +134,15 @@ class Result {
   void change(String newResult) {
     _shortAskResult = newResult;
   }
+
+  Result.fromJson(Map<String, dynamic> json)
+      : _multipleChoiceResultList = json['multipleChoiceResultList'],
+        _blankFillingResultList = json['blankFillingResultList'],
+        _shortAskResult = json['shortAskResult'];
+
+  Map<String, dynamic> toJson() => {
+        'multipleChoiceResultList': _multipleChoiceResultList,
+        'blankFillingResultList': _blankFillingResultList,
+        'shortAskResult': _shortAskResult,
+      };
 }
