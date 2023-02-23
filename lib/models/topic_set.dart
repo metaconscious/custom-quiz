@@ -33,4 +33,12 @@ class TopicSetModel extends ChangeNotifier {
   List<Topic> get topics {
     return _indexes.map((e) => topicModel.elementAt(e)).toList();
   }
+
+  TopicSetModel.fromJson(Map<String, dynamic> json) {
+    _indexes.addAll(json['topic-set']);
+  }
+
+  Map<String, dynamic> toJson() => {
+        'topic-set': _indexes.map((e) => topics.elementAt(e).toJson()).toList(),
+      };
 }
