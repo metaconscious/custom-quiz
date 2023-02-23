@@ -51,4 +51,12 @@ class TopicModel extends ChangeNotifier {
   List<Topic> getAllByAnswerType(AnswerTypes answerType) {
     return topics.expand((e) => [if (e.answerType == answerType) e]).toList();
   }
+
+  TopicModel.fromJson(Map<String, dynamic> json) {
+    topics.addAll(json['topics']);
+  }
+
+  Map<String, dynamic> toJson() => {
+        'topics': topics.map((e) => e.toJson()).toList(),
+      };
 }
