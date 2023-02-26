@@ -337,6 +337,26 @@ class TopicSetModel extends ChangeNotifier {
   final List<TopicSet> _topicSets;
 
   Iterable<TopicSet> get topicSets => List.unmodifiable(_topicSets);
+
+  void add(TopicSet topicSet) {
+    _topicSets.add(topicSet);
+    notifyListeners();
+  }
+
+  void addAll(Iterable<TopicSet> topicSets) {
+    _topicSets.addAll(topicSets);
+    notifyListeners();
+  }
+
+  void remove(TopicSet topicSet) {
+    _topicSets.remove(topicSet);
+    notifyListeners();
+  }
+
+  void removeAt(int index) {
+    _topicSets.removeAt(index);
+    notifyListeners();
+  }
 }
 
 void main() {
