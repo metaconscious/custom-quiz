@@ -306,17 +306,12 @@ class TopicSet extends ChangeNotifier implements UuidIndexable {
   }
 
   Topic getByUuid(String uuid, {required TopicModel topicModel}) {
-    var index = _uuidIndexMap[uuid];
-    if (index! < 0) {
-      index = update(uuid, topicModel: topicModel);
-    }
+    var index = update(uuid, topicModel: topicModel);
     return topicModel.topicList.elementAt(index);
   }
 
   List<Topic> getAll({required TopicModel topicModel}) {
-    if (_uuidIndexMap.values.any((element) => element < 0)) {
-      updateIndexes(topicModel: topicModel);
-    }
+    updateIndexes(topicModel: topicModel);
     return _uuidIndexMap.values
         .map((e) => topicModel.topicList.elementAt(e))
         .toList();
