@@ -195,6 +195,20 @@ class ShortAskAnswer extends Answer {
   }
 }
 
+class UuidIndexable {
+  final String _uuid = const Uuid().v4(options: {'rng': UuidUtil.cryptoRNG()});
+
+  String get uuid => _uuid;
+}
+
+@immutable
+class Topic extends UuidIndexable {
+  Topic({required this.question, required this.answer});
+
+  final Question question;
+  final Answer answer;
+}
+
 void main() {
   runApp(const MyApp());
 }
