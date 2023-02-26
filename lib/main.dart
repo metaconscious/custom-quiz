@@ -101,6 +101,9 @@ abstract class Answer extends Comparable<Answer> {
 class MultipleChoiceAnswer extends Answer {
   MultipleChoiceAnswer({required List<bool> answer}) : _answerList = answer;
 
+  MultipleChoiceAnswer.empty({required int length})
+      : _answerList = List.filled(length, false);
+
   final List<bool> _answerList;
 
   @override
@@ -146,7 +149,14 @@ class BlankFillingAnswer extends Answer {
   BlankFillingAnswer({required List<String> blankAnswer})
       : _blankAnswer = blankAnswer;
 
+  BlankFillingAnswer.empty({required int length})
+      : _blankAnswer = List.filled(length, '');
+
   final List<String> _blankAnswer;
+
+  void changeAt(int index, String value) {
+    _blankAnswer[index] = value;
+  }
 
   @override
   String get answer => _blankAnswer.join(';');
@@ -164,6 +174,8 @@ class BlankFillingAnswer extends Answer {
 }
 
 class ShortAskAnswer extends Answer {
+  ShortAskAnswer.empty() : _multilineAnswer = List.empty();
+
   ShortAskAnswer.string({required String multilineAnswer})
       : _multilineAnswer =
             multilineAnswer.split('\n').map((e) => e.trim()).toList();
@@ -173,11 +185,11 @@ class ShortAskAnswer extends Answer {
 
   List<String> _multilineAnswer;
 
-  set answerByList(List<String> newAnswer) {
+  void answerByList(List<String> newAnswer) {
     _multilineAnswer = newAnswer;
   }
 
-  set answerByString(String newMultilineAnswer) {
+  void answerByString(String newMultilineAnswer) {
     _multilineAnswer =
         newMultilineAnswer.split('\n').map((e) => e.trim()).toList();
   }
@@ -265,6 +277,10 @@ class TopicModel extends ChangeNotifier {
 
   int getIndexByUuid(String uuid) {
     return _topicList.indexWhere((element) => element.uuid == uuid);
+  }
+
+  bool existsWithUuid(String uuid) {
+    return _topicList.any((element) => element.uuid == uuid);
   }
 }
 
@@ -389,6 +405,112 @@ class TopicSetModel extends ChangeNotifier {
 
   int getIndexByUuid(String uuid) {
     return _topicSets.indexWhere((element) => element.uuid == uuid);
+  }
+}
+
+abstract class Quiz extends UuidIndexable {
+  Quiz({required String topicUuid, required Answer answer})
+      : _topicUuid = topicUuid,
+        _answer = answer;
+
+  final String _uuid = UuidIndexable.uuidV4Crypto();
+  final String _topicUuid;
+  final Answer _answer;
+
+  @override
+  String get uuid => _uuid;
+
+  String get topicUuid => _topicUuid;
+
+  Answer get answer => _answer;
+
+  T cast<T extends Answer>() {
+    if (_answer is T) {
+      return _answer as T;
+    }
+    throw UnsupportedError('answer is not type ${T.runtimeType}');
+  }
+}
+
+class MultipleChoiceQuiz extends Quiz {
+  MultipleChoiceQuiz({required super.topicUuid, required super.answer});
+
+  MultipleChoiceQuiz.empty({required Topic topic})
+      : super(
+            topicUuid: topic.uuid,
+            answer: MultipleChoiceAnswer.empty(
+                length:
+                    (topic.answer as MultipleChoiceAnswer)._answerList.length));
+}
+
+class BlankFillingQuiz extends Quiz {
+  BlankFillingQuiz({required super.topicUuid, required super.answer});
+
+  BlankFillingQuiz.empty({required Topic topic})
+      : super(
+            topicUuid: topic.uuid,
+            answer: BlankFillingAnswer.empty(
+                length:
+                    (topic.answer as BlankFillingAnswer)._blankAnswer.length));
+}
+
+class ShortAnswerQuiz extends Quiz {
+  ShortAnswerQuiz({required super.topicUuid, required super.answer});
+
+  ShortAnswerQuiz.empty({required Topic topic})
+      : super(topicUuid: topic.uuid, answer: ShortAskAnswer.empty());
+}
+
+enum QuizTypes {
+  multipleChoice,
+  trueOrFalse,
+  blankFilling,
+  shortAsk,
+}
+
+class QuizModel extends ChangeNotifier {
+  late final TopicModel topicModel;
+
+  final List<Quiz> _quizList;
+
+  QuizModel.empty() : _quizList = List.empty();
+
+  QuizModel.from(Iterable<Quiz> quizzes) : _quizList = List.from(quizzes);
+
+  Iterable<Quiz> get quizzes => List.unmodifiable(_quizList);
+
+  void add(Quiz quiz) {
+    if (topicModel.existsWithUuid(quiz.topicUuid)) {
+      _quizList.add(quiz);
+      notifyListeners();
+    }
+    throw ArgumentError('Topic with uuid ${quiz.uuid} not exist');
+  }
+
+  void emplace(Topic topic, QuizTypes quizType) {
+    switch (quizType) {
+      case QuizTypes.multipleChoice:
+      case QuizTypes.trueOrFalse:
+        add(MultipleChoiceQuiz.empty(topic: topic));
+        break;
+      case QuizTypes.blankFilling:
+        add(BlankFillingQuiz.empty(topic: topic));
+        break;
+      case QuizTypes.shortAsk:
+        add(ShortAnswerQuiz.empty(topic: topic));
+        break;
+    }
+    notifyListeners();
+  }
+
+  void removeAt(int index) {
+    _quizList.removeAt(index);
+    notifyListeners();
+  }
+
+  void remove(Quiz quiz) {
+    _quizList.remove(quiz);
+    notifyListeners();
   }
 }
 
