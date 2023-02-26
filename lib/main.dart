@@ -285,6 +285,10 @@ class TopicSet extends ChangeNotifier implements UuidIndexable {
 
   TopicSet.from(Map<String, int> uuidIndexMap) : _uuidIndexMap = uuidIndexMap;
 
+  void _syncWith(TopicModel topicModel) {
+    _lastSync = topicModel._lastUpdate;
+  }
+
   void add(String uuid, {required TopicModel topicModel}) {
     _uuidIndexMap[uuid] = topicModel.getIndexByUuid(uuid);
     notifyListeners();
@@ -311,7 +315,7 @@ class TopicSet extends ChangeNotifier implements UuidIndexable {
       return;
     }
     _uuidIndexMap.updateAll((key, _) => topicModel.getIndexByUuid(key));
-    _lastSync = topicModel.lastUpdate;
+    _syncWith(topicModel);
   }
 
   int update(String uuid, {required TopicModel topicModel}) {
