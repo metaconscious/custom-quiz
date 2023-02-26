@@ -196,53 +196,68 @@ class ShortAskAnswer extends Answer {
   }
 }
 
-class UuidIndexable {
-  final String _uuid = const Uuid().v4(options: {'rng': UuidUtil.cryptoRNG()});
+abstract class UuidIndexable {
+  static const _uuidGen = Uuid();
 
-  String get uuid => _uuid;
+  static String uuidV4() {
+    return _uuidGen.v4();
+  }
+
+  static String uuidV4Crypto() {
+    return _uuidGen.v4(options: {'rng': UuidUtil.cryptoRNG()});
+  }
+
+  String get uuid;
 }
 
 @immutable
 class Topic extends UuidIndexable {
-  Topic({required this.question, required this.answer});
+  Topic({required this.question, required this.answer})
+      : _uuid = UuidIndexable.uuidV4Crypto();
 
+  final String _uuid;
   final Question question;
   final Answer answer;
+
+  @override
+  String get uuid => _uuid;
 }
 
 class TopicModel extends ChangeNotifier {
-  TopicModel.from(List<Topic> topics) : topicList = topics;
+  TopicModel.from(Iterable<Topic> topics) : _topicList = List.from(topics);
 
-  TopicModel.empty() : topicList = [];
+  TopicModel.empty() : _topicList = List.empty();
 
-  final List<Topic> topicList;
+  final List<Topic> _topicList;
+
+  Iterable<Topic> get topicList => List.unmodifiable(_topicList);
 
   void add(Topic topic) {
-    topicList.add(topic);
+    _topicList.add(topic);
     notifyListeners();
   }
 
   void emplace({required Question question, required Answer answer}) {
-    topicList.add(Topic(question: question, answer: answer));
+    _topicList.add(Topic(question: question, answer: answer));
     notifyListeners();
   }
 
   void removeAt(int index) {
-    topicList.removeAt(index);
+    _topicList.removeAt(index);
     notifyListeners();
   }
 
   void remove(Topic topic) {
-    topicList.remove(topic);
+    _topicList.remove(topic);
     notifyListeners();
   }
 
   Topic getByUuid(String uuid) {
-    return topicList.singleWhere((element) => element.uuid == uuid);
+    return _topicList.singleWhere((element) => element.uuid == uuid);
   }
 
   int getIndexByUuid(String uuid) {
-    return topicList.indexWhere((element) => element.uuid == uuid);
+    return _topicList.indexWhere((element) => element.uuid == uuid);
   }
 }
 
@@ -251,10 +266,10 @@ class TopicSet extends ChangeNotifier {
 
   TopicSet.empty() : _uuidIndexMap = {};
 
-  TopicSet.notIndexed(List<String> uuids)
+  TopicSet.notIndexed(Iterable<String> uuids)
       : _uuidIndexMap = {for (var uuid in uuids) uuid: -1};
 
-  TopicSet.indexed({required this.topicModel, required List<String> uuids})
+  TopicSet.indexed({required this.topicModel, required Iterable<String> uuids})
       : _uuidIndexMap = {
           for (var uuid in uuids) uuid: topicModel.getIndexByUuid(uuid)
         };
@@ -309,8 +324,6 @@ class TopicSet extends ChangeNotifier {
         .toList();
   }
 }
-
-class TopicSetModel extends ChangeNotifier {}
 
 void main() {
   runApp(const MyApp());
