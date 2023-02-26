@@ -371,6 +371,14 @@ class TopicSetModel extends ChangeNotifier {
     _topicSets.removeAt(index);
     notifyListeners();
   }
+
+  TopicSet getByUuid(String uuid) {
+    return _topicSets.singleWhere((element) => element.uuid == uuid);
+  }
+
+  int getIndexByUuid(String uuid) {
+    return _topicSets.indexWhere((element) => element.uuid == uuid);
+  }
 }
 
 void main() {
