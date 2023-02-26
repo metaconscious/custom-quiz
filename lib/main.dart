@@ -263,6 +263,27 @@ class TopicSet extends ChangeNotifier {
 
   final Map<String, int> _uuidIndexMap;
 
+  void add(String uuid) {
+    _uuidIndexMap[uuid] = topicModel.getIndexByUuid(uuid);
+    notifyListeners();
+  }
+
+  void addAll(List<String> uuids) {
+    _uuidIndexMap.addEntries(
+        uuids.map((e) => MapEntry(e, topicModel.getIndexByUuid(e))).toList());
+    notifyListeners();
+  }
+
+  void remove(String uuid) {
+    _uuidIndexMap.remove(uuid);
+    notifyListeners();
+  }
+
+  void removeFrom(List<String> uuids) {
+    _uuidIndexMap.removeWhere((key, value) => uuids.contains(key));
+    notifyListeners();
+  }
+
   void updateIndexes() {
     _uuidIndexMap.updateAll((key, _) => topicModel.getIndexByUuid(key));
   }
@@ -288,6 +309,8 @@ class TopicSet extends ChangeNotifier {
         .toList();
   }
 }
+
+class TopicSetModel extends ChangeNotifier {}
 
 void main() {
   runApp(const MyApp());
