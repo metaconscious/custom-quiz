@@ -261,8 +261,6 @@ class TopicModel extends ChangeNotifier {
 }
 
 class TopicSet extends ChangeNotifier implements UuidIndexable {
-  late final TopicModel topicModel;
-
   final String _uuid = UuidIndexable.uuidV4Crypto();
   final Map<String, int> _uuidIndexMap;
 
@@ -271,19 +269,19 @@ class TopicSet extends ChangeNotifier implements UuidIndexable {
   TopicSet.notIndexed(Iterable<String> uuids)
       : _uuidIndexMap = {for (var uuid in uuids) uuid: -1};
 
-  TopicSet.indexed({required this.topicModel, required Iterable<String> uuids})
+  TopicSet.indexed(Iterable<String> uuids, {required TopicModel topicModel})
       : _uuidIndexMap = {
           for (var uuid in uuids) uuid: topicModel.getIndexByUuid(uuid)
         };
 
   TopicSet.from(Map<String, int> uuidIndexMap) : _uuidIndexMap = uuidIndexMap;
 
-  void add(String uuid) {
+  void add(String uuid, {required TopicModel topicModel}) {
     _uuidIndexMap[uuid] = topicModel.getIndexByUuid(uuid);
     notifyListeners();
   }
 
-  void addAll(List<String> uuids) {
+  void addAll(List<String> uuids, {required TopicModel topicModel}) {
     _uuidIndexMap.addEntries(
         uuids.map((e) => MapEntry(e, topicModel.getIndexByUuid(e))).toList());
     notifyListeners();
@@ -299,25 +297,25 @@ class TopicSet extends ChangeNotifier implements UuidIndexable {
     notifyListeners();
   }
 
-  void updateIndexes() {
+  void updateIndexes({required TopicModel topicModel}) {
     _uuidIndexMap.updateAll((key, _) => topicModel.getIndexByUuid(key));
   }
 
-  int update(String uuid) {
+  int update(String uuid, {required TopicModel topicModel}) {
     return _uuidIndexMap.update(uuid, (_) => topicModel.getIndexByUuid(uuid));
   }
 
-  Topic getByUuid(String uuid) {
+  Topic getByUuid(String uuid, {required TopicModel topicModel}) {
     var index = _uuidIndexMap[uuid];
     if (index! < 0) {
-      index = update(uuid);
+      index = update(uuid, topicModel: topicModel);
     }
     return topicModel.topicList.elementAt(index);
   }
 
-  List<Topic> get topics {
+  List<Topic> getAll({required TopicModel topicModel}) {
     if (_uuidIndexMap.values.any((element) => element < 0)) {
-      updateIndexes();
+      updateIndexes(topicModel: topicModel);
     }
     return _uuidIndexMap.values
         .map((e) => topicModel.topicList.elementAt(e))
