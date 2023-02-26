@@ -357,6 +357,17 @@ class TopicSetModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void emplace(Iterable<Topic> topics) {
+    _topicSets.add(
+        TopicSet.indexed(topics.map((e) => e.uuid), topicModel: topicModel));
+  }
+
+  void emplaceAll(Iterable<Iterable<Topic>> topicsList) {
+    _topicSets.addAll(topicsList.map((e) => TopicSet.indexed(
+        e.map((e) => e.uuid).toList(),
+        topicModel: topicModel)));
+  }
+
   void addAll(Iterable<TopicSet> topicSets) {
     _topicSets.addAll(topicSets);
     notifyListeners();
