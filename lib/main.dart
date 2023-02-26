@@ -212,10 +212,9 @@ abstract class UuidIndexable {
 
 @immutable
 class Topic extends UuidIndexable {
-  Topic({required this.question, required this.answer})
-      : _uuid = UuidIndexable.uuidV4Crypto();
+  Topic({required this.question, required this.answer});
 
-  final String _uuid;
+  final String _uuid = UuidIndexable.uuidV4Crypto();
   final Question question;
   final Answer answer;
 
@@ -261,8 +260,11 @@ class TopicModel extends ChangeNotifier {
   }
 }
 
-class TopicSet extends ChangeNotifier {
+class TopicSet extends ChangeNotifier implements UuidIndexable {
   late final TopicModel topicModel;
+
+  final String _uuid = UuidIndexable.uuidV4Crypto();
+  final Map<String, int> _uuidIndexMap;
 
   TopicSet.empty() : _uuidIndexMap = {};
 
@@ -275,8 +277,6 @@ class TopicSet extends ChangeNotifier {
         };
 
   TopicSet.from(Map<String, int> uuidIndexMap) : _uuidIndexMap = uuidIndexMap;
-
-  final Map<String, int> _uuidIndexMap;
 
   void add(String uuid) {
     _uuidIndexMap[uuid] = topicModel.getIndexByUuid(uuid);
@@ -323,6 +323,22 @@ class TopicSet extends ChangeNotifier {
         .map((e) => topicModel.topicList.elementAt(e))
         .toList();
   }
+
+  @override
+  String get uuid => _uuid;
+}
+
+class TopicSetModel extends ChangeNotifier {
+  late final TopicModel topicModel;
+
+  TopicSetModel.empty() : _topicSets = List.empty();
+
+  TopicSetModel.from(Iterable<TopicSet> topicSets)
+      : _topicSets = List.from(topicSets);
+
+  final List<TopicSet> _topicSets;
+
+  Iterable<TopicSet> get topicSets => List.unmodifiable(_topicSets);
 }
 
 void main() {
