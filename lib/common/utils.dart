@@ -7,3 +7,7 @@ String indexToUppercaseAlphabet(int index) {
     return '$index';
   }
 }
+
+String removeNonPrintable(String string) {
+  return string.replaceAll(RegExp(r'[^A-Za-z\d().,;?]'), '');
+}
