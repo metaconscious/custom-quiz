@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:custom_quiz/screens/home.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -207,6 +208,85 @@ class Topic extends UuidIndexable {
 
   final Question question;
   final Answer answer;
+}
+
+class TopicModel extends ChangeNotifier {
+  TopicModel.from(List<Topic> topics) : topicList = topics;
+
+  TopicModel.empty() : topicList = [];
+
+  final List<Topic> topicList;
+
+  void add(Topic topic) {
+    topicList.add(topic);
+    notifyListeners();
+  }
+
+  void emplace({required Question question, required Answer answer}) {
+    topicList.add(Topic(question: question, answer: answer));
+    notifyListeners();
+  }
+
+  void removeAt(int index) {
+    topicList.removeAt(index);
+    notifyListeners();
+  }
+
+  void remove(Topic topic) {
+    topicList.remove(topic);
+    notifyListeners();
+  }
+
+  Topic getByUuid(String uuid) {
+    return topicList.singleWhere((element) => element.uuid == uuid);
+  }
+
+  int getIndexByUuid(String uuid) {
+    return topicList.indexWhere((element) => element.uuid == uuid);
+  }
+}
+
+class TopicSet extends ChangeNotifier {
+  late final TopicModel topicModel;
+
+  TopicSet.empty() : _uuidIndexMap = {};
+
+  TopicSet.notIndexed(List<String> uuids)
+      : _uuidIndexMap = {for (var uuid in uuids) uuid: -1};
+
+  TopicSet.indexed({required this.topicModel, required List<String> uuids})
+      : _uuidIndexMap = {
+          for (var uuid in uuids) uuid: topicModel.getIndexByUuid(uuid)
+        };
+
+  TopicSet.from(Map<String, int> uuidIndexMap) : _uuidIndexMap = uuidIndexMap;
+
+  final Map<String, int> _uuidIndexMap;
+
+  void updateIndexes() {
+    _uuidIndexMap.updateAll((key, _) => topicModel.getIndexByUuid(key));
+  }
+
+  int update(String uuid) {
+    return _uuidIndexMap.update(uuid, (_) => topicModel.getIndexByUuid(uuid));
+  }
+
+  Topic getByUuid(String uuid) {
+    var index = _uuidIndexMap[uuid];
+    if (index! < 0) {
+      index = update(uuid);
+    }
+    return topicModel.topicList.elementAt(index);
+  }
+
+  List<Topic> get topics {
+    if (_uuidIndexMap.values.any((element) => element < 0)) {
+      updateIndexes();
+    }
+    return _uuidIndexMap.values
+        .map((e) => topicModel.topicList.elementAt(e))
+        .toList();
+  }
 }
 
 void main() {
