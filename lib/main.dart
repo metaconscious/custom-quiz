@@ -702,7 +702,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider(create: (context) => null),
+        ChangeNotifierProvider<TopicModel>(
+          create: (context) => TopicModel.empty(),
+        ),
+        ChangeNotifierProxyProvider<TopicModel, TopicSetModel>(
+          create: (context) => TopicSetModel.empty(),
+          update: (context, topicModel, topicSetModel) {
+            if (topicSetModel == null) {
+              throw ArgumentError.notNull('topicSetModel');
+            }
+            topicSetModel.topicModel = topicModel;
+            return topicSetModel;
+          },
+        ),
       ],
       child: MaterialApp.router(
         title: 'Custom Quiz',
