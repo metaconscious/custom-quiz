@@ -228,6 +228,13 @@ class TopicModel extends ChangeNotifier {
   TopicModel.empty() : _topicList = List.empty();
 
   final List<Topic> _topicList;
+  DateTime _lastUpdate = DateTime.now();
+
+  get lastUpdate => _lastUpdate;
+
+  void _update() {
+    _lastUpdate = DateTime.now();
+  }
 
   Iterable<Topic> get topicList => List.unmodifiable(_topicList);
 
@@ -238,17 +245,18 @@ class TopicModel extends ChangeNotifier {
 
   void emplace({required Question question, required Answer answer}) {
     _topicList.add(Topic(question: question, answer: answer));
-    notifyListeners();
   }
 
   void removeAt(int index) {
     _topicList.removeAt(index);
     notifyListeners();
+    _update();
   }
 
   void remove(Topic topic) {
     _topicList.remove(topic);
     notifyListeners();
+    _update();
   }
 
   Topic getByUuid(String uuid) {
@@ -263,6 +271,7 @@ class TopicModel extends ChangeNotifier {
 class TopicSet extends ChangeNotifier implements UuidIndexable {
   final String _uuid = UuidIndexable.uuidV4Crypto();
   final Map<String, int> _uuidIndexMap;
+  DateTime _lastSync = DateTime.now();
 
   TopicSet.empty() : _uuidIndexMap = {};
 
@@ -298,7 +307,11 @@ class TopicSet extends ChangeNotifier implements UuidIndexable {
   }
 
   void updateIndexes({required TopicModel topicModel}) {
+    if (_lastSync == topicModel.lastUpdate) {
+      return;
+    }
     _uuidIndexMap.updateAll((key, _) => topicModel.getIndexByUuid(key));
+    _lastSync = topicModel.lastUpdate;
   }
 
   int update(String uuid, {required TopicModel topicModel}) {
@@ -306,8 +319,10 @@ class TopicSet extends ChangeNotifier implements UuidIndexable {
   }
 
   Topic getByUuid(String uuid, {required TopicModel topicModel}) {
-    var index = update(uuid, topicModel: topicModel);
-    return topicModel.topicList.elementAt(index);
+    if (_lastSync == topicModel.lastUpdate) {
+      return topicModel.topicList.elementAt(_uuidIndexMap[uuid]!);
+    }
+    return topicModel.topicList.elementAt(update(uuid, topicModel: topicModel));
   }
 
   List<Topic> getAll({required TopicModel topicModel}) {
