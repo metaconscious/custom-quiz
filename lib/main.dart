@@ -472,6 +472,9 @@ class QuizModel extends ChangeNotifier {
   late final TopicModel topicModel;
 
   final List<Quiz> _quizList;
+  DateTime _lastUpdate = DateTime.now();
+
+  DateTime get lastUpdate => _lastUpdate;
 
   QuizModel.empty() : _quizList = List.empty();
 
@@ -506,11 +509,152 @@ class QuizModel extends ChangeNotifier {
   void removeAt(int index) {
     _quizList.removeAt(index);
     notifyListeners();
+    _update();
   }
 
   void remove(Quiz quiz) {
     _quizList.remove(quiz);
     notifyListeners();
+    _update();
+  }
+
+  void _update() {
+    _lastUpdate = DateTime.now();
+  }
+
+  Quiz getByUuid(String uuid) {
+    return _quizList.singleWhere((element) => element.uuid == uuid);
+  }
+
+  int getIndexByUuid(String uuid) {
+    return _quizList.indexWhere((element) => element.uuid == uuid);
+  }
+
+  bool existsWithUuid(String uuid) {
+    return _quizList.any((element) => element.uuid == uuid);
+  }
+}
+
+class QuizSet extends ChangeNotifier implements UuidIndexable {
+  final String _uuid = UuidIndexable.uuidV4Crypto();
+  final Map<String, int> _uuidIndexMap;
+  DateTime _lastSync = DateTime.now();
+
+  QuizSet.empty() : _uuidIndexMap = {};
+
+  QuizSet.notIndexed(Iterable<String> uuids)
+      : _uuidIndexMap = {for (var uuid in uuids) uuid: -1};
+
+  QuizSet.indexed(Iterable<String> uuids, {required QuizModel quizModel})
+      : _uuidIndexMap = {
+          for (var uuid in uuids) uuid: quizModel.getIndexByUuid(uuid)
+        };
+
+  QuizSet.from(Map<String, int> uuidIndexMap) : _uuidIndexMap = uuidIndexMap;
+
+  void _syncWith(QuizModel quizModel) {
+    _lastSync = quizModel.lastUpdate;
+  }
+
+  @override
+  String get uuid => _uuid;
+
+  void add(String uuid, {required QuizModel quizModel}) {
+    _uuidIndexMap[uuid] = quizModel.getIndexByUuid(uuid);
+    notifyListeners();
+  }
+
+  void addAll(List<String> uuids, {required QuizModel quizModel}) {
+    _uuidIndexMap.addEntries(
+        uuids.map((e) => MapEntry(e, quizModel.getIndexByUuid(e))).toList());
+    notifyListeners();
+  }
+
+  void remove(String uuid) {
+    _uuidIndexMap.remove(uuid);
+    notifyListeners();
+  }
+
+  void removeFrom(List<String> uuids) {
+    _uuidIndexMap.removeWhere((key, value) => uuids.contains(key));
+    notifyListeners();
+  }
+
+  void updateIndexes({required QuizModel quizModel}) {
+    if (_lastSync == quizModel.lastUpdate) {
+      return;
+    }
+    _uuidIndexMap.updateAll((key, _) => quizModel.getIndexByUuid(key));
+    _syncWith(quizModel);
+  }
+
+  int update(String uuid, {required QuizModel quizModel}) {
+    return _uuidIndexMap.update(uuid, (_) => quizModel.getIndexByUuid(uuid));
+  }
+
+  Quiz getByUuid(String uuid, {required QuizModel quizModel}) {
+    if (_lastSync == quizModel.lastUpdate) {
+      return quizModel.quizzes.elementAt(_uuidIndexMap[uuid]!);
+    }
+    return quizModel.quizzes.elementAt(update(uuid, quizModel: quizModel));
+  }
+
+  List<Quiz> getAll({required QuizModel quizModel}) {
+    updateIndexes(quizModel: quizModel);
+    return _uuidIndexMap.values
+        .map((e) => quizModel.quizzes.elementAt(e))
+        .toList();
+  }
+}
+
+class QuizSetModel extends ChangeNotifier {
+  late final QuizModel quizModel;
+
+  QuizSetModel.empty() : _quizSets = List.empty();
+
+  QuizSetModel.from(Iterable<QuizSet> quizSets)
+      : _quizSets = List.from(quizSets);
+
+  final List<QuizSet> _quizSets;
+
+  Iterable<QuizSet> get quizSets => List.unmodifiable(_quizSets);
+
+  void add(QuizSet quizSet) {
+    _quizSets.add(quizSet);
+    notifyListeners();
+  }
+
+  void emplace(Iterable<Quiz> quizzes) {
+    _quizSets
+        .add(QuizSet.indexed(quizzes.map((e) => e.uuid), quizModel: quizModel));
+  }
+
+  void emplaceAll(Iterable<Iterable<Quiz>> quizzesList) {
+    _quizSets.addAll(quizzesList.map((e) =>
+        QuizSet.indexed(e.map((e) => e.uuid).toList(), quizModel: quizModel)));
+  }
+
+  void addAll(Iterable<QuizSet> quizSets) {
+    _quizSets.addAll(quizSets);
+    notifyListeners();
+  }
+
+  void remove(QuizSet quizSet) {
+    _quizSets.remove(quizSet);
+    notifyListeners();
+  }
+
+  void removeAt(int index) {
+    _quizSets.removeAt(index);
+    notifyListeners();
+  }
+
+  QuizSet getByUuid(String uuid) {
+    return _quizSets.singleWhere((element) => element.uuid == uuid);
+  }
+
+  int getIndexByUuid(String uuid) {
+    return _quizSets.indexWhere((element) => element.uuid == uuid);
   }
 }
 
