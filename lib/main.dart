@@ -692,6 +692,24 @@ GoRouter router() {
         builder: (context, state) => const HomeScreen(),
         routes: [
           GoRoute(
+            path: 'topics',
+            builder: (context, state) => Scaffold(
+              appBar: AppBar(
+                title: const Text('All Topics'),
+              ),
+              body: const Placeholder(),
+            ),
+          ),
+          GoRoute(
+            path: 'history',
+            builder: (context, state) => Scaffold(
+              appBar: AppBar(
+                title: const Text('Quiz History'),
+              ),
+              body: const Placeholder(),
+            ),
+          ),
+          GoRoute(
             path: 'new-topic',
             builder: (context, state) => Scaffold(
               appBar: AppBar(
@@ -702,6 +720,15 @@ GoRouter router() {
                     icon: const Icon(Icons.save),
                   ),
                 ],
+              ),
+              body: const Placeholder(),
+            ),
+          ),
+          GoRoute(
+            path: 'user-info',
+            builder: (context, state) => Scaffold(
+              appBar: AppBar(
+                title: const Text('User Info'),
               ),
               body: const Placeholder(),
             ),
@@ -736,6 +763,27 @@ class MyApp extends StatelessWidget {
             return topicSetModel;
           },
         ),
+        ChangeNotifierProxyProvider<TopicModel, QuizModel>(
+          create: (context) => QuizModel.empty(),
+          update: (context, topicModel, quizModel) {
+            if (quizModel == null) {
+              throw ArgumentError.notNull('topicSetModel');
+            }
+            quizModel.topicModel = topicModel;
+            return quizModel;
+          },
+        ),
+        ChangeNotifierProxyProvider2<TopicModel, QuizModel, QuizSetModel>(
+          create: (context) => QuizSetModel.empty(),
+          update: (context, topicModel, quizModel, quizSetModel) {
+            if (quizSetModel == null) {
+              throw ArgumentError.notNull('topicSetModel');
+            }
+            quizSetModel.topicModel = topicModel;
+            quizSetModel.quizModel = quizModel;
+            return quizSetModel;
+          },
+        )
       ],
       child: MaterialApp.router(
         title: 'Custom Quiz',
