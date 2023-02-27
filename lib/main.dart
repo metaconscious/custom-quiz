@@ -222,13 +222,22 @@ abstract class UuidIndexable {
   String get uuid;
 }
 
+enum TopicTypes {
+  multipleChoice,
+  trueOrFalse,
+  blankFilling,
+  shortAsk,
+}
+
 @immutable
 class Topic extends UuidIndexable {
-  Topic({required this.question, required this.answer});
+  Topic(
+      {required this.question, required this.answer, required this.topicType});
 
   final String _uuid = UuidIndexable.uuidV4Crypto();
   final Question question;
   final Answer answer;
+  final TopicTypes topicType;
 
   @override
   String get uuid => _uuid;
@@ -255,8 +264,12 @@ class TopicModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void emplace({required Question question, required Answer answer}) {
-    _topicList.add(Topic(question: question, answer: answer));
+  void emplace(
+      {required Question question,
+      required Answer answer,
+      required TopicTypes topicType}) {
+    _topicList
+        .add(Topic(question: question, answer: answer, topicType: topicType));
   }
 
   void removeAt(int index) {
@@ -354,6 +367,10 @@ class TopicSet extends ChangeNotifier implements UuidIndexable {
 
   @override
   String get uuid => _uuid;
+
+  Iterable<String> get topicUuids {
+    return _uuidIndexMap.keys;
+  }
 }
 
 class TopicSetModel extends ChangeNotifier {
@@ -461,13 +478,6 @@ class ShortAnswerQuiz extends Quiz {
       : super(topicUuid: topic.uuid, answer: ShortAskAnswer.empty());
 }
 
-enum QuizTypes {
-  multipleChoice,
-  trueOrFalse,
-  blankFilling,
-  shortAsk,
-}
-
 class QuizModel extends ChangeNotifier {
   late final TopicModel topicModel;
 
@@ -482,7 +492,7 @@ class QuizModel extends ChangeNotifier {
 
   Iterable<Quiz> get quizzes => List.unmodifiable(_quizList);
 
-  void add(Quiz quiz) {
+  void _add(Quiz quiz) {
     if (topicModel.existsWithUuid(quiz.topicUuid)) {
       _quizList.add(quiz);
       notifyListeners();
@@ -490,19 +500,28 @@ class QuizModel extends ChangeNotifier {
     throw ArgumentError('Topic with uuid ${quiz.uuid} not exist');
   }
 
-  void emplace(Topic topic, QuizTypes quizType) {
-    switch (quizType) {
-      case QuizTypes.multipleChoice:
-      case QuizTypes.trueOrFalse:
-        add(MultipleChoiceQuiz.empty(topic: topic));
+  void _dispatchAdd(Topic topic) {
+    switch (topic.topicType) {
+      case TopicTypes.multipleChoice:
+      case TopicTypes.trueOrFalse:
+        _add(MultipleChoiceQuiz.empty(topic: topic));
         break;
-      case QuizTypes.blankFilling:
-        add(BlankFillingQuiz.empty(topic: topic));
+      case TopicTypes.blankFilling:
+        _add(BlankFillingQuiz.empty(topic: topic));
         break;
-      case QuizTypes.shortAsk:
-        add(ShortAnswerQuiz.empty(topic: topic));
+      case TopicTypes.shortAsk:
+        _add(ShortAnswerQuiz.empty(topic: topic));
         break;
     }
+  }
+
+  void emplace(Topic topic) {
+    _dispatchAdd(topic);
+    notifyListeners();
+  }
+
+  void emplaceAll(Iterable<Topic> topics) {
+    topics.forEach(emplace);
     notifyListeners();
   }
 
@@ -542,13 +561,14 @@ class QuizSet extends ChangeNotifier implements UuidIndexable {
 
   QuizSet.empty() : _uuidIndexMap = {};
 
-  QuizSet.notIndexed(Iterable<String> uuids)
-      : _uuidIndexMap = {for (var uuid in uuids) uuid: -1};
-
-  QuizSet.indexed(Iterable<String> uuids, {required QuizModel quizModel})
-      : _uuidIndexMap = {
-          for (var uuid in uuids) uuid: quizModel.getIndexByUuid(uuid)
-        };
+  QuizSet.indexed(TopicSet topicSet,
+      {required TopicModel topicModel, required QuizModel quizModel})
+      : _uuidIndexMap = {} {
+    topicSet.getAll(topicModel: topicModel).forEach((element) {
+      quizModel.emplace(element);
+      _uuidIndexMap[quizModel.quizzes.last.uuid] = quizModel.quizzes.length - 1;
+    });
+  }
 
   QuizSet.from(Map<String, int> uuidIndexMap) : _uuidIndexMap = uuidIndexMap;
 
@@ -608,6 +628,7 @@ class QuizSet extends ChangeNotifier implements UuidIndexable {
 }
 
 class QuizSetModel extends ChangeNotifier {
+  late final TopicModel topicModel;
   late final QuizModel quizModel;
 
   QuizSetModel.empty() : _quizSets = List.empty();
@@ -624,14 +645,14 @@ class QuizSetModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void emplace(Iterable<Quiz> quizzes) {
-    _quizSets
-        .add(QuizSet.indexed(quizzes.map((e) => e.uuid), quizModel: quizModel));
+  void emplace(TopicSet topicSet) {
+    _quizSets.add(QuizSet.indexed(topicSet,
+        quizModel: quizModel, topicModel: topicModel));
   }
 
-  void emplaceAll(Iterable<Iterable<Quiz>> quizzesList) {
+  void emplaceAll(Iterable<TopicSet> quizzesList) {
     _quizSets.addAll(quizzesList.map((e) =>
-        QuizSet.indexed(e.map((e) => e.uuid).toList(), quizModel: quizModel)));
+        QuizSet.indexed(e, quizModel: quizModel, topicModel: topicModel)));
   }
 
   void addAll(Iterable<QuizSet> quizSets) {
